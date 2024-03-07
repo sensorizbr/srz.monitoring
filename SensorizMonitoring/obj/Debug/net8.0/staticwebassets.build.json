@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "Ft0vZAR32zdVaLRRJfwY1l6rXUX5oV4lZFqNFHamDbk=",
+  "Source": "SensorizMonitoring",
+  "BasePath": "_content/SensorizMonitoring",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
