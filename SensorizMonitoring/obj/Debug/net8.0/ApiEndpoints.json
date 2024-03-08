@@ -1,0 +1,18 @@
+[
+  {
+    "ContainingType": "SensorizMonitoring.Controllers.MonitoringController",
+    "Method": "Post",
+    "RelativePath": "api/Monitoring",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "monitoring",
+        "Type": "SensorizMonitoring.Models.MonitoringModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

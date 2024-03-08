@@ -9,6 +9,15 @@ namespace SensorizMonitoring
     public class Startup
     {
         // Este método é chamado pelo tempo de execução. Use este método para adicionar serviços ao contêiner.
+
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<ApiKeyMiddleware>();
