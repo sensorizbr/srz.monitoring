@@ -1,0 +1,97 @@
+{
+  "rxTime": 1709823144600,
+  "pos": {
+    "type": 8600,
+    "time": 1709823144594,
+    "lat": -23.4847891,
+    "lon": -46.8539635,
+    "cep": 42.836
+  },
+  "device": 72308628872412644,
+  "deviceId": "72308628872412644",
+  "status": {
+    "seqNum": 413696,
+    "externalPower": false,
+    "charging": false,
+    "batteryVoltage": 3.874,
+    "temperature": 27.28125,
+    "lightLevel": 562,
+    "atmosphericPressure": 932.320068359375,
+    "orientation": {
+      "x": 0.00244140625,
+      "y": 0.004150390625,
+      "z": 0.974853515625
+    },
+    "vibration": {
+      "x": 0.01025390625,
+      "y": 0.011962890625,
+      "z": 0.01416015625
+    },
+    "signal": 72,
+    "tamper": 0,
+    "movement": "STATIONARY",
+    "batteryState": "NORMAL",
+    "batteryLevel": 50,
+    "lowSignal": false,
+    "gpsFail": false
+  },
+  "stateFlags": {
+    "moving": false,
+    "tamper": false,
+    "ignition": false
+  },
+  "gpsData": {
+    "sats": 0
+  },
+  "slaveList": [
+    72308628872044313,
+    72308628872559096,
+    72308628872560154
+  ],
+  "nextUpdateTime": 1709826744594,
+  "live": true,
+  "slaveDetails": [
+
+  ],
+  "timeSeriesData": {
+    "lightLevel": [
+      {
+        "time": 1709822998594,
+        "value": 580
+      }
+    ],
+    "orientation": [
+      {
+        "time": 1709822998594,
+        "value": {
+          "x": 0.001708984375,
+          "y": 0.00341796875,
+          "z": 0.97412109375
+        }
+      }
+    ],
+    "temperature": [
+      {
+        "time": 1709822998594,
+        "value": 27.28125
+      }
+    ],
+    "pressure": [
+      {
+        "time": 1709822998594,
+        "value": 932.40966796875
+      }
+    ],
+    "vibration": [
+      {
+        "time": 1709822998594,
+        "value": {
+          "x": 0.01220703125,
+          "y": 0.01220703125,
+          "z": 0.01220703125
+        }
+      }
+    ]
+  },
+  "model": "LTR-HGR4-1-1"
+}

@@ -3,6 +3,7 @@ using Nancy.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,10 +11,10 @@ namespace Database
 {
     public class DataBase
     {
-        private MySqlConnection sql_consqlserver;
-        private MySqlCommand sql_cmdsqlserver;
+        private MySqlConnection sql_consql;
+        private MySqlCommand sql_cmdsql;
 
-        public DataTable SelectAccessDBSqlServer(string sql, string sc, params MySqlParameter[] parameters)
+        public DataTable SelectAccessDB(string sql, string sc, params MySqlParameter[] parameters)
         {
             try
             {
@@ -23,15 +24,18 @@ namespace Database
 
                 string stringConnection = sc;
 
-                sql_consqlserver = new MySqlConnection(stringConnection);//Conecta a Base passando a string de Conexão
+                sql_consql = new MySqlConnection(stringConnection);//Conecta a Base passando a string de Conexão
 
-                sql_cmdsqlserver = sql_consqlserver.CreateCommand();
+                sql_cmdsql = sql_consql.CreateCommand();
 
-                Adp = new MySqlDataAdapter(sql, sql_consqlserver);
+                Adp = new MySqlDataAdapter(sql, sql_consql);
 
-                foreach (var param in parameters)
+                if (parameters != null)
                 {
-                    Adp.SelectCommand.Parameters.Add(param);
+                    foreach (var param in parameters)
+                    {
+                        Adp.SelectCommand.Parameters.Add(param);
+                    }
                 }
 
                 Adp.Fill(ds);
@@ -46,7 +50,7 @@ namespace Database
             finally
             {
                 //lg.GeraLog("CONEXÃO FECHADA", 5);
-                sql_consqlserver.Close();
+                sql_consql.Close();
             }
         }
         public string DataTableToJSON(DataTable table)
@@ -66,6 +70,26 @@ namespace Database
             JavaScriptSerializer serializer = new JavaScriptSerializer();
             //serializer.MaxJsonLength = Int32.MaxValue;
             return serializer.Serialize(list);
+        }
+
+        public dynamic DTToJson(DataTable dataTable)
+        {
+            List<ExpandoObject> listaObjetos = new List<ExpandoObject>();
+
+            foreach (DataRow row in dataTable.Rows)
+            {
+                dynamic objetoDinamico = new ExpandoObject();
+                var objetoDinamicoDict = (IDictionary<string, object>)objetoDinamico;
+
+                foreach (DataColumn coluna in dataTable.Columns)
+                {
+                    objetoDinamicoDict[coluna.ColumnName] = row[coluna];
+                }
+
+                listaObjetos.Add(objetoDinamico);
+            }
+
+            return listaObjetos;
         }
 
         public bool TrataRetorno(DataTable dt)

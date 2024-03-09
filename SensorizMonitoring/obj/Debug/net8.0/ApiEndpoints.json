@@ -1,8 +1,129 @@
 [
   {
+    "ContainingType": "SensorizMonitoring.Controllers.CompanyController",
+    "Method": "DeleteCompany",
+    "RelativePath": "Company/DeleteCompany",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SensorizMonitoring.Controllers.CompanyController",
+    "Method": "EnableDisableCompany",
+    "RelativePath": "Company/EnableDisableCompany",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "flag",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SensorizMonitoring.Controllers.CompanyController",
+    "Method": "GetCompanies",
+    "RelativePath": "Company/GetCompanies",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "limit",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SensorizMonitoring.Controllers.CompanyController",
+    "Method": "GetCompanyById",
+    "RelativePath": "Company/GetCompanyById",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SensorizMonitoring.Controllers.CompanyController",
+    "Method": "InsertCompany",
+    "RelativePath": "Company/InsertCompany",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "company",
+        "Type": "SensorizMonitoring.Models.CompanyModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SensorizMonitoring.Controllers.CompanyController",
+    "Method": "UpdateCompany",
+    "RelativePath": "Company/UpdateCompany",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "company",
+        "Type": "SensorizMonitoring.Models.CompanyModel",
+        "IsRequired": true
+      },
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SensorizMonitoring.Controllers.DeviceReferenceController",
+    "Method": "SincronizeDeviceReferences",
+    "RelativePath": "DeviceReference/SincronizeDeviceReferences",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "SensorizMonitoring.Controllers.MonitoringController",
-    "Method": "Post",
-    "RelativePath": "api/Monitoring",
+    "Method": "InsertMonitoring",
+    "RelativePath": "Monitoring/InsertMonitoring",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,

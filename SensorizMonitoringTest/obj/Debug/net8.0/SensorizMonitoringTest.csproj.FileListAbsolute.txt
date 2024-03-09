@@ -1,0 +1,6 @@
+C:\GIT\srz.monitoring\SensorizMonitoringTest\obj\Debug\net8.0\SensorizMonitoringTest.csproj.AssemblyReference.cache
+C:\GIT\srz.monitoring\SensorizMonitoringTest\obj\Debug\net8.0\SensorizMonitoringTest.GeneratedMSBuildEditorConfig.editorconfig
+C:\GIT\srz.monitoring\SensorizMonitoringTest\obj\Debug\net8.0\SensorizMonitoringTest.AssemblyInfoInputs.cache
+C:\GIT\srz.monitoring\SensorizMonitoringTest\obj\Debug\net8.0\SensorizMonitoringTest.AssemblyInfo.cs
+C:\GIT\srz.monitoring\SensorizMonitoringTest\obj\Debug\net8.0\SensorizMonitoringTest.csproj.CoreCompileInputs.cache
+C:\GIT\srz.monitoring\SensorizMonitoringTest\obj\Debug\net8.0\SensorizMonitoringTest.sourcelink.json

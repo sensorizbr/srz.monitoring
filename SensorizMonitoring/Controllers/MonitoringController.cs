@@ -5,7 +5,7 @@ using SensorizMonitoring.Models;
 
 namespace SensorizMonitoring.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]/[action]")]
     [ApiController]
     public class MonitoringController : Controller
     {
@@ -18,27 +18,22 @@ namespace SensorizMonitoring.Controllers
 
         // Rota POST: api/Exemplo
         [HttpPost]
-        public IActionResult Post([FromBody] MonitoringModel monitoring)
+        public IActionResult InsertMonitoring([FromBody] MonitoringModel monitoring)
         {
             //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
             Monitoring mnt = new Monitoring(_configuration);
-            Utils utl = new Utils();
-            utl.EscreverArquivo("----------------------");
-            utl.EscreverArquivo("DEVICE ID: " + monitoring.deviceId);
-            utl.EscreverArquivo("STATUS: " + monitoring.status.batteryState);
-            utl.EscreverArquivo("TEMPERATURA: " + monitoring.status.temperature);
-            utl.EscreverArquivo("PRESSÃO ATMOSFERICA: " + monitoring.status.atmosphericPressure);
-            utl.EscreverArquivo("LONGITUDE: " + monitoring.pos.lon);
-            utl.EscreverArquivo("LATITUDE: " + monitoring.pos.lat);
-            utl.EscreverArquivo("CEP: " + monitoring.pos.cep);
-            utl.EscreverArquivo("----------------------");
+            Globals utl = new Globals();
+            utl.EscreverArquivo("Starting a inserction...");
+
             // Lógica para manipular a solicitação POST
             if (mnt.InsertMonitoring(monitoring))
             {
+                utl.EscreverArquivo("Alright!");
                 return Ok($"Recebido!");
             }
             else
             {
+                utl.EscreverArquivo("Was not possible to insert");
                 return BadRequest($"Ooops!");
             }
         }

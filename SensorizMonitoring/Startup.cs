@@ -20,7 +20,7 @@ namespace SensorizMonitoring
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<ApiKeyMiddleware>();
+            //services.AddTransient<ApiKeyMiddleware>();
             services.AddControllers();
 
             // Configuração do Swagger
@@ -43,7 +43,7 @@ namespace SensorizMonitoring
                 app.UseHsts();
             }
 
-            app.UseMiddleware<ApiKeyMiddleware>();
+            //app.UseMiddleware<ApiKeyMiddleware>();
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();
@@ -58,7 +58,7 @@ namespace SensorizMonitoring
             // Habilitar o middleware para servir a interface Swagger gerada
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "NomeDoSeuProjeto v1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "SensorizMonitoring v1");
             });
 
             app.UseEndpoints(endpoints =>
