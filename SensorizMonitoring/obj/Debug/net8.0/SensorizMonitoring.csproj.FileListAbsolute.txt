@@ -50,6 +50,7 @@ C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\Microsoft.Win32.System
 C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\MySql.Data.dll
 C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\Nancy.dll
 C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\Newtonsoft.Json.dll
+C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\Swashbuckle.AspNetCore.ReDoc.dll
 C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
 C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerUI.dll

@@ -55,10 +55,16 @@ namespace SensorizMonitoring
 
             app.UseSwagger();
 
+            app.UseReDoc(c =>
+            {
+                c.DocumentTitle = "SensorizMonitoring";
+                c.SpecUrl = "/swagger/v1/swagger.json"; // URL da especificação Swagger (OpenAPI)
+            });
+
             // Habilitar o middleware para servir a interface Swagger gerada
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "SensorizMonitoring v1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "SensorizMonitoring");
             });
 
             app.UseEndpoints(endpoints =>
