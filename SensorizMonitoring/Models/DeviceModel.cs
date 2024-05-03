@@ -14,6 +14,6 @@ namespace SensorizMonitoring.Models
 
         [Required(ErrorMessage = "Field Model is Required")]
         [StringLength(30, ErrorMessage = "Should not have more then 30 Characteres")]
-        public string model { get; set; }
+        public int modelID { get; set; }
     }
 }

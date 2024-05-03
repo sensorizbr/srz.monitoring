@@ -196,5 +196,24 @@ namespace SensorizMonitoring.Business
             }
         }
 
+        public dynamic GetAllDeviceReference()
+        {
+            try
+            {
+                string sql = string.Empty;
+
+                sql += "SELECT id, name,sensors FROM device_reference " + Environment.NewLine;
+
+                dt = db.SelectAccessDB(sql, _configuration.GetConnectionString("DefaultConnection"), null);
+
+                return db.DTToJson(dt);
+            }
+            catch (Exception ex)
+            {
+                utl.EscreverArquivo(ex.Message.ToString());
+                return null;
+            }
+        }
+
     }
 }

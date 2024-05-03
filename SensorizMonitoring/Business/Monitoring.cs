@@ -64,7 +64,7 @@ namespace SensorizMonitoring.Business
                     new MySqlParameter("?com_signal", mv.status.signal),
                     new MySqlParameter("?tamper", mv.status.tamper),
                     new MySqlParameter("?movement", mv.status.movement)
-                    ) ;
+                );
 
                 if (db.TrataRetorno(dt))
                 {

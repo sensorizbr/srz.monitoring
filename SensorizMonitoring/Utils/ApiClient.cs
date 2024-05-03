@@ -1,6 +1,8 @@
-﻿using Org.BouncyCastle.Ocsp;
+﻿using Newtonsoft.Json;
+using Org.BouncyCastle.Ocsp;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 
 namespace SensorizMonitoring.Utils
 {
@@ -36,5 +38,30 @@ namespace SensorizMonitoring.Utils
                 return null;
             }
         }
+
+        public async Task<string> PostApiDataAsync<T>(string endpoint, T data)
+        {
+            try
+            {
+                var content = new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync(endpoint, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsStringAsync();
+                }
+                else
+                {
+                    Console.WriteLine($"Erro: {response.StatusCode}");
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro: {ex.Message}");
+                return null;
+            }
+        }
+
     }
 }

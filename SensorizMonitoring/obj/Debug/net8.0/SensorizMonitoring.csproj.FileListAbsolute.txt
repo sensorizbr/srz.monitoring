@@ -31,7 +31,6 @@
 /Users/leonardorissi/Documents/GitHub/SensorizMonitoring/SensorizMonitoring/obj/Debug/net8.0/SensorizMonitoring.MvcApplicationPartsAssemblyInfo.cs
 /Users/leonardorissi/Documents/GitHub/SensorizMonitoring/SensorizMonitoring/obj/Debug/net8.0/SensorizMonitoring.csproj.CopyComplete
 C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\appsettings.Development.json
-C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\appsettings.json
 C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\SensorizMonitoring.exe
 C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\SensorizMonitoring.deps.json
 C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\SensorizMonitoring.runtimeconfig.json
@@ -92,3 +91,6 @@ C:\GIT\srz.monitoring\SensorizMonitoring\obj\Debug\net8.0\refint\SensorizMonitor
 C:\GIT\srz.monitoring\SensorizMonitoring\obj\Debug\net8.0\SensorizMonitoring.pdb
 C:\GIT\srz.monitoring\SensorizMonitoring\obj\Debug\net8.0\SensorizMonitoring.genruntimeconfig.cache
 C:\GIT\srz.monitoring\SensorizMonitoring\obj\Debug\net8.0\ref\SensorizMonitoring.dll
+C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\appSettings.json
+C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\SensorizMonitoring.xml
+C:\GIT\srz.monitoring\SensorizMonitoring\obj\Debug\net8.0\SensorizMonitoring.xml

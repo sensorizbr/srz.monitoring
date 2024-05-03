@@ -16,7 +16,9 @@ namespace SensorizMonitoring.Controllers
             _configuration = configuration;
         }
 
-        // Rota POST: api/Exemplo
+        /// <summary>
+        /// Esta rota foi criada para receber a telemetria dos dispositivos. Basta configurar a Rota na LocoAware.
+        /// </summary>
         [HttpPost]
         public IActionResult InsertMonitoring([FromBody] MonitoringModel monitoring)
         {

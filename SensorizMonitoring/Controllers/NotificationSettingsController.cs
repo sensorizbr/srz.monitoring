@@ -2,68 +2,61 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SensorizMonitoring.Business;
 using SensorizMonitoring.Models;
+using SensorizMonitoring.Models.NotificationsSettings;
 
 namespace SensorizMonitoring.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
-    public class CompanyController : Controller
+    public class NotificationSettingsController : Controller
     {
         private readonly IConfiguration _configuration;
 
-        public CompanyController(IConfiguration configuration)
+        public NotificationSettingsController(IConfiguration configuration)
         {
             _configuration = configuration;
         }
 
         /// <summary>
-        /// Insere a Companhia
+        /// Cria a configuração de uma notificação de um determinado dispositivo
         /// </summary>
         [HttpPost]
-        public IActionResult InsertCompany([FromBody] CompanyModel company)
+        public IActionResult InsertNotificationSettings([FromBody] NotificationSettingsModel ns)
         {
             //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
-            Company mnt = new Company(_configuration);
+            NotificationSettings mnt = new NotificationSettings(_configuration);
             Globals utl = new Globals();
             utl.EscreverArquivo("Starting a inserction...");
 
             // Lógica para manipular a solicitação POST
 
-            if (!mnt.CompanyExists(company.document.Trim()))
+            if (mnt.InsertNotificationSettings(ns))
             {
-                if (mnt.InsertCompany(company))
-                {
-                    utl.EscreverArquivo("Alright!");
-                    return Ok($"Recebido!");
-                }
-                else
-                {
-                    utl.EscreverArquivo("Was not possible to insert");
-                    return BadRequest($"Ooops!");
-                }
+                utl.EscreverArquivo("Alright!");
+                return Ok($"Recebido!");
             }
             else
             {
-                utl.EscreverArquivo("Company already exists! " + company.document + " - " + company.name);
-                return BadRequest("Company already exists!");
+                utl.EscreverArquivo("Was not possible to insert");
+                return BadRequest($"Ooops!");
             }
         }
 
         /// <summary>
-        /// Atualiza a Companhia
+        /// Atualiza a configuração de uma notificação de um determinado dispositivo
         /// </summary>
         [HttpPut]
-        public IActionResult UpdateCompany([FromBody] CompanyModel company, int id)
+        public IActionResult UpdateNotificationSettings([FromBody] NotificationSettingsModel company, int id)
         {
             //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
-            Company mnt = new Company(_configuration);
+            NotificationSettings mnt = new NotificationSettings(_configuration);
             Globals utl = new Globals();
             utl.EscreverArquivo("Starting a update...");
 
             // Lógica para manipular a solicitação POST
 
 
-            if (mnt.UpdateCompany(company, id))
+            if (mnt.UpdateNotificationSettings(company, id))
             {
                 utl.EscreverArquivo("Alright!");
                 return Ok($"Recebido!");
@@ -76,18 +69,17 @@ namespace SensorizMonitoring.Controllers
         }
 
         /// <summary>
-        /// Exclui a Companhia
+        /// Exclui a configuração de uma notificação de um determinado dispositivo
         /// </summary>
         [HttpPut]
-        public IActionResult DeleteCompany(int id)
+        public IActionResult DeleteNotificationSettings(int id)
         {
-            //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
-            Company mnt = new Company(_configuration);
+            NotificationSettings mnt = new NotificationSettings(_configuration);
             Globals utl = new Globals();
             utl.EscreverArquivo("Starting a Deletion...");
 
 
-            if (mnt.DeleteCompany(id))
+            if (mnt.DeleteNotificationSettings(id))
             {
                 utl.EscreverArquivo("Alright!");
                 return Ok($"Recebido!");
@@ -100,18 +92,17 @@ namespace SensorizMonitoring.Controllers
         }
 
         /// <summary>
-        /// Ativa ou Desativa a Companhia
+        /// Ativa ou Desativa a configuração de uma notificação de um determinado dispositivo
         /// </summary>
         [HttpPut]
-        public IActionResult EnableDisableCompany(int id, int flag)
+        public IActionResult EnableDisableNotificationSettings(int id, int flag)
         {
-            //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
-            Company mnt = new Company(_configuration);
+            NotificationSettings mnt = new NotificationSettings(_configuration);
             Globals utl = new Globals();
             utl.EscreverArquivo("Starting a update...");
 
 
-            if (mnt.DeleteCompany(id))
+            if (mnt.DisableEnableNotificationSettings(id, flag))
             {
                 utl.EscreverArquivo("Alright!");
                 return Ok($"Recebido!");
@@ -125,37 +116,60 @@ namespace SensorizMonitoring.Controllers
 
 
         /// <summary>
-        /// Lista todas as companhias de forma paginada
+        /// Lista todas as configurações de uma notificação de um determinado dispositivo
         /// </summary>
         [HttpGet]
-        public IActionResult GetCompanies(int limit, int page)
+        public IActionResult GetNotificationSettings(int limit, int page)
         {
-            Company mnt = new Company(_configuration);
+            NotificationSettings mnt = new NotificationSettings(_configuration);
             Globals utl = new Globals();
 
             //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
             utl.EscreverArquivo("Getting data...");
 
             // Lógica para manipular a solicitação POST
-            dynamic ret = mnt.GetCompanies(limit, page);
+            dynamic ret = mnt.GetNotificationSettings(limit, page);
 
             return Ok(ret);
         }
 
         /// <summary>
-        /// Lista a Companhia por ID
+        /// Lista a configuração de uma notificação de um determinado dispositivo por ID da Configuração
         /// </summary>
         [HttpGet]
-        public IActionResult GetCompanyById(int id)
+        public IActionResult GetNotificationSettingsById(int id)
         {
-            Company mnt = new Company(_configuration);
+            NotificationSettings mnt = new NotificationSettings(_configuration);
             Globals utl = new Globals();
 
             //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
             utl.EscreverArquivo("Getting data...");
 
             // Lógica para manipular a solicitação POST
-            dynamic ret = mnt.GetCompanyById(id);
+            dynamic ret = mnt.GetNotificationSettingsById(id);
+
+            if (ret.Count == 0)
+            {
+                return NoContent();
+            }
+
+            return Ok(ret);
+        }
+
+        /// <summary>
+        /// Lista a configuração de uma notificação de um determinado dispositivo por ID da Configuração
+        /// </summary>
+        [HttpGet]
+        public IActionResult GetNotificationSettingsByDeviceID(string DeviceID)
+        {
+            NotificationSettings mnt = new NotificationSettings(_configuration);
+            Globals utl = new Globals();
+
+            //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
+            utl.EscreverArquivo("Getting data...");
+
+            // Lógica para manipular a solicitação POST
+            dynamic ret = mnt.GetNotificationSettingsByDeviceId(DeviceID);
 
             if (ret.Count == 0)
             {

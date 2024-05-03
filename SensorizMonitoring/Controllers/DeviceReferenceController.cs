@@ -14,7 +14,9 @@ namespace SensorizMonitoring.Controllers
             _configuration = configuration;
         }
 
-        // Rota POST: api/Exemplo
+        /// <summary>
+        /// Sincroniza Todos os Modelos de Dispositivos, sincronizãndo diretamente com a API da LocoAware
+        /// </summary>
         [HttpPost]
         public IActionResult SincronizeDeviceReferences()
         {
@@ -30,6 +32,19 @@ namespace SensorizMonitoring.Controllers
             {
                 return BadRequest();
             }
+        }
+
+        /// <summary>
+        /// Lista todos os modelos de dispositivos na base de dados da Sensoriz
+        /// </summary>
+        [HttpGet]
+        public IActionResult GetAllDeviceReference()
+        {
+            //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
+            DeviceReference dr = new DeviceReference(_configuration);
+            Globals utl = new Globals();
+
+            return Ok(dr.GetAllDeviceReference());
         }
     }
 }

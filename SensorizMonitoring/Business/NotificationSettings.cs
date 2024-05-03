@@ -1,17 +1,17 @@
 ﻿using Database;
 using MySql.Data.MySqlClient;
-using Newtonsoft.Json;
 using SensorizMonitoring.Models;
+using SensorizMonitoring.Models.NotificationsSettings;
 using System.Data;
 using System.Diagnostics;
 
 namespace SensorizMonitoring.Business
 {
-    public class Device
+    public class NotificationSettings
     {
         private readonly IConfiguration _configuration;
 
-        public Device(IConfiguration configuration)
+        public NotificationSettings(IConfiguration configuration)
         {
             _configuration = configuration;
         }
@@ -20,29 +20,36 @@ namespace SensorizMonitoring.Business
         DataBase db = new DataBase();
         Globals utl = new Globals();
 
-        public bool InsertDevice(DeviceModel mv)
+        public bool InsertNotificationSettings(NotificationSettingsModel mv)
         {
             try
             {
                 string sql = string.Empty;
 
-                sql += "INSERT INTO device " + Environment.NewLine;
+                //if (CompanyExists(mv.document))
+                //{
+                //    throw new Exception("Company already exists! " + mv.document + " - " + mv.name);
+                //}
+
+                sql += "INSERT INTO device_notification_settings " + Environment.NewLine;
                 sql += "( " + Environment.NewLine;
-                sql += "device_code, company_id, description, " + Environment.NewLine;
-                sql += "device_reference_id, enabled, created_at " + Environment.NewLine;
+                sql += "device_id, sensor_type_id, interval_flag, " + Environment.NewLine;
+                sql += "start_value, end_value, exact_value, enabled, created_at " + Environment.NewLine;
                 sql += ") VALUES ( " + Environment.NewLine;
-                sql += "?device_code, ?company_id, ?description, " + Environment.NewLine;
-                sql += "?device_reference_id, 1, ?created_at " + Environment.NewLine;
+                sql += "?device_id, ?sensor_type_id, ?interval_flag, " + Environment.NewLine;
+                sql += "?start_value, ?end_value, ?exact_value, 1, NOW() " + Environment.NewLine;
                 sql += "); " + Environment.NewLine;
 
                 sql += "SELECT 100 AS RETORNO, LAST_INSERT_ID() AS LASTID;";
 
 
                 dt = db.SelectAccessDB(sql, _configuration.GetConnectionString("DefaultConnection"),
-                    new MySqlParameter("?device_code", mv.device_code),
-                    new MySqlParameter("?company_id", mv.company_id),
-                    new MySqlParameter("?description", mv.description),
-                    new MySqlParameter("?device_reference_id", mv.modelID)
+                    new MySqlParameter("?device_id", mv.device_id),
+                    new MySqlParameter("?sensor_type_id", mv.sensor_type_id),
+                    new MySqlParameter("?interval_flag", mv.interval_flag),
+                    new MySqlParameter("?start_value", mv.start_value),
+                    new MySqlParameter("?end_value", mv.end_value),
+                    new MySqlParameter("?exact_value", mv.exatc_value)
                     );
 
                 if (db.TrataRetorno(dt))
@@ -52,7 +59,7 @@ namespace SensorizMonitoring.Business
                 }
                 else
                 {
-                    utl.EscreverArquivo("Cannot Insert Device. Probably SQL Syntax Error.");
+                    utl.EscreverArquivo("Cannot Insert Device Notification. Probably SQL Syntax Error.");
                     return false;
                 }
             }
@@ -63,38 +70,42 @@ namespace SensorizMonitoring.Business
             }
         }
 
-        public bool UpdateDevice(DeviceModel mv, int id)
+        public bool UpdateNotificationSettings(NotificationSettingsModel mv, int id)
         {
             try
             {
                 string sql = string.Empty;
 
-                sql += "UPDATE device " + Environment.NewLine;
+                sql += "UPDATE device_notification_settings " + Environment.NewLine;
                 sql += " SET " + Environment.NewLine;
-                sql += " device_code = ?device_code " + Environment.NewLine;
-                sql += ",company_id = ?company_id " + Environment.NewLine;
-                sql += ",description = ?description " + Environment.NewLine;
-                sql += ",device_reference_id = ?device_reference_id " + Environment.NewLine;
+                sql += " device_id = ?device_id " + Environment.NewLine;
+                sql += ",sensor_type_id = ?sensor_type_id " + Environment.NewLine;
+                sql += ",interval = ?interval " + Environment.NewLine;
+                sql += ",start_value = ?start_value " + Environment.NewLine;
+                sql += ",end_value = ?end_value " + Environment.NewLine;
+                sql += ",exact_value = ?exact_value " + Environment.NewLine;
                 sql += "WHERE id = ?id " + Environment.NewLine;
                 sql += "SELECT 100 AS RETORNO;";
 
 
                 dt = db.SelectAccessDB(sql, _configuration.GetConnectionString("DefaultConnection"),
-                    new MySqlParameter("?device_code", mv.device_code),
-                    new MySqlParameter("?company_id", mv.company_id),
-                    new MySqlParameter("?description", mv.description),
-                    new MySqlParameter("?device_reference_id", mv.modelID),
+                    new MySqlParameter("?device_id", mv.device_id),
+                    new MySqlParameter("?sensor_type_id", mv.sensor_type_id),
+                    new MySqlParameter("?interval", mv.interval_flag),
+                    new MySqlParameter("?start_value", mv.start_value),
+                    new MySqlParameter("?end_value", mv.end_value),
+                    new MySqlParameter("?exact_value", mv.exatc_value),
                     new MySqlParameter("?id", id)
                     );
 
                 if (db.TrataRetorno(dt))
                 {
-                    utl.EscreverArquivo("Updated. " + id + " | " + mv.device_code);
+                    utl.EscreverArquivo("Updated. " + id);
                     return true;
                 }
                 else
                 {
-                    utl.EscreverArquivo("Cannot Update Device. Probably SQL Syntax Error.");
+                    utl.EscreverArquivo("Cannot Update Notification Settings. Probably SQL Syntax Error.");
                     return false;
                 }
             }
@@ -105,13 +116,13 @@ namespace SensorizMonitoring.Business
             }
         }
 
-        public bool DisableEnableDevice(int id, int flag)
+        public bool DisableEnableNotificationSettings(int id, int flag)
         {
             try
             {
                 string sql = string.Empty;
 
-                sql += "UPDATE device " + Environment.NewLine;
+                sql += "UPDATE device_notification_settings " + Environment.NewLine;
                 sql += " SET " + Environment.NewLine;
                 sql += " enabled = ?enabled " + Environment.NewLine;
                 sql += "WHERE id = ?id " + Environment.NewLine;
@@ -127,18 +138,18 @@ namespace SensorizMonitoring.Business
                 {
                     if (flag == 1)
                     {
-                        utl.EscreverArquivo("Enabled Device. " + id);
+                        utl.EscreverArquivo("Enabled Notification Settings. " + id);
                     }
                     else
                     {
-                        utl.EscreverArquivo("Disabled Device. " + id);
+                        utl.EscreverArquivo("Disabled Notification Settings. " + id);
                     }
 
                     return true;
                 }
                 else
                 {
-                    utl.EscreverArquivo("Cannot Enable/Disable Device. Probably SQL Syntax Error.");
+                    utl.EscreverArquivo("Cannot Enable/Disable Notification Settings. Probably SQL Syntax Error.");
                     return false;
                 }
             }
@@ -149,13 +160,13 @@ namespace SensorizMonitoring.Business
             }
         }
 
-        public bool DeleteDevice(int id)
+        public bool DeleteNotificationSettings(int id)
         {
             try
             {
                 string sql = string.Empty;
 
-                sql += "DELETE device " + Environment.NewLine;
+                sql += "DELETE device_notification_settings " + Environment.NewLine;
                 sql += "WHERE id = ?id " + Environment.NewLine;
                 sql += "SELECT 100 AS RETORNO;";
 
@@ -171,7 +182,7 @@ namespace SensorizMonitoring.Business
                 }
                 else
                 {
-                    utl.EscreverArquivo("Cannot Delete Device. Probably SQL Syntax Error.");
+                    utl.EscreverArquivo("Cannot Delete Notification Settings. Probably SQL Syntax Error.");
                     return false;
                 }
             }
@@ -182,21 +193,18 @@ namespace SensorizMonitoring.Business
             }
         }
 
-        public dynamic GetDeviceByCompanyId(int limit, int page, int companyId)
+        public dynamic GetNotificationSettings(int limit, int page)
         {
             try
             {
                 string sql = string.Empty;
 
-                sql += "SELECT * FROM device " + Environment.NewLine;
-                sql += "WHERE company_id = ?company_id " + Environment.NewLine;
-                sql += "ORDER BY name " + Environment.NewLine;
+                sql += "SELECT * FROM device_notification_settings " + Environment.NewLine;
                 sql += "LIMIT ?limit offset ?offset " + Environment.NewLine;
 
                 dt = db.SelectAccessDB(sql, _configuration.GetConnectionString("DefaultConnection"),
                     new MySqlParameter("?limit", limit),
-                    new MySqlParameter("?offset", utl.OffSet(limit, page)),
-                    new MySqlParameter("?company_id", companyId)
+                    new MySqlParameter("?offset", utl.OffSet(limit, page))
                     );
 
                 return db.DTToJson(dt);
@@ -208,17 +216,17 @@ namespace SensorizMonitoring.Business
             }
         }
 
-        public dynamic GetDeviceById(int DeviceId)
+        public dynamic GetNotificationSettingsById(int id)
         {
             try
             {
                 string sql = string.Empty;
 
-                sql += "SELECT * FROM device " + Environment.NewLine;
+                sql += "SELECT * FROM device_notification_settings " + Environment.NewLine;
                 sql += "WHERE id = ?id " + Environment.NewLine;
 
                 dt = db.SelectAccessDB(sql, _configuration.GetConnectionString("DefaultConnection"),
-                    new MySqlParameter("?id", DeviceId)
+                    new MySqlParameter("?id", id)
                     );
 
                 return db.DTToJson(dt);
@@ -230,71 +238,20 @@ namespace SensorizMonitoring.Business
             }
         }
 
-        public bool DeviceExists(string DeviceCode)
+        public dynamic GetNotificationSettingsByDeviceId(string DeviceID)
         {
             try
             {
                 string sql = string.Empty;
 
-                sql += "SELECT COUNT(*) as QTD FROM Device " + Environment.NewLine;
-                sql += "WHERE device_code = ?device_code " + Environment.NewLine;
+                sql += "SELECT * FROM device_notification_settings " + Environment.NewLine;
+                sql += "WHERE device_id = ?device_id " + Environment.NewLine;
 
                 dt = db.SelectAccessDB(sql, _configuration.GetConnectionString("DefaultConnection"),
-                    new MySqlParameter("?device_code", DeviceCode)
+                    new MySqlParameter("?device_id", DeviceID)
                     );
 
-                return db.TrataExists(dt);
-            }
-            catch (Exception ex)
-            {
-                utl.EscreverArquivo(ex.Message.ToString());
-                return false;
-            }
-        }
-
-        public class Include
-        {
-            public bool pairings { get; set; }
-        }
-        public class DeviceInformationRequest
-        {
-            public string device { get; set; }
-            public Include include { get; set; } 
-        }
-
-        public async Task<dynamic> GetDeviceInformationByDeviceId(string sDeviceId)
-        {
-            try
-            {
-                string sql = string.Empty;
-
-                //var caminhoArquivo = Path.Combine(Directory.GetCurrentDirectory(), "Data", "family_model.json");
-                //var conteudoJson = File.ReadAllText(caminhoArquivo);
-
-                var baseUrl = _configuration["Settings:LocoBaseUrlRPC"];
-                var token = _configuration["Settings:LocoToken"];
-                var endpoint = "getDevice";
-
-                Include inc = new Include();
-                inc.pairings = false;
-
-                DeviceInformationRequest dir = new DeviceInformationRequest();
-                dir.device = sDeviceId;
-                dir.include = inc;
-
-                var apiClient = new SensorizMonitoring.Utils.ApiClient(baseUrl, token);
-                var apiData = await apiClient.PostApiDataAsync(endpoint, dir);
-
-                Console.WriteLine(apiData);
-
-                if (!string.IsNullOrEmpty(apiData))
-                {
-                    return apiData;
-                }
-                else
-                {
-                    return null;
-                }
+                return db.DTToJson(dt);
             }
             catch (Exception ex)
             {
