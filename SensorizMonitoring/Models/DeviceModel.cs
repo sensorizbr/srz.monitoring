@@ -12,8 +12,6 @@ namespace SensorizMonitoring.Models
         [StringLength(100, ErrorMessage = "Should not have more then 100 Characteres")]
         public string description { get; set; }
 
-        [Required(ErrorMessage = "Field Model is Required")]
-        [StringLength(30, ErrorMessage = "Should not have more then 30 Characteres")]
-        public int modelID { get; set; }
+        public int device_reference_id { get; set; }
     }
 }

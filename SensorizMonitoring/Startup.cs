@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using SensorizMonitoring.Data.Context;
+using System;
 using System.Reflection;
 
 namespace SensorizMonitoring
@@ -32,6 +35,11 @@ namespace SensorizMonitoring
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
+
+            string mySqlConnection = Configuration.GetConnectionString("DefaultConnection");
+
+            services.AddDbContextPool<AppDbContext>(options =>
+                  options.UseMySql(mySqlConnection, ServerVersion.AutoDetect(mySqlConnection)));
         }
 
         // Este método é chamado pelo tempo de execução. Use este método para configurar o pipeline de solicitação HTTP.

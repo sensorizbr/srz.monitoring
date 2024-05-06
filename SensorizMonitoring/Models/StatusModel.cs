@@ -4,7 +4,7 @@
     {
         public int seqNum { get; set; }
         public bool externalPower { get; set; }
-        public bool charging { get; set; }
+        public int charging { get; set; }
         public double batteryVoltage { get; set; }
         public double temperature { get; set; }
         public int lightLevel { get; set; }

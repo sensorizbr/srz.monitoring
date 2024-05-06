@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SensorizMonitoring.Business;
+using SensorizMonitoring.Data.Context;
+using SensorizMonitoring.Data.Models;
 using SensorizMonitoring.Models;
 
 namespace SensorizMonitoring.Controllers
@@ -10,10 +13,12 @@ namespace SensorizMonitoring.Controllers
     public class CompanyController : Controller
     {
         private readonly IConfiguration _configuration;
+        private readonly AppDbContext _context;
 
-        public CompanyController(IConfiguration configuration)
+        public CompanyController(IConfiguration configuration, AppDbContext context)
         {
             _configuration = configuration;
+            _context = context;
         }
 
         /// <summary>
@@ -22,124 +27,149 @@ namespace SensorizMonitoring.Controllers
         [HttpPost]
         public IActionResult InsertCompany([FromBody] CompanyModel company)
         {
-            //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
-            Company mnt = new Company(_configuration);
-            Globals utl = new Globals();
-            utl.EscreverArquivo("Starting a inserction...");
-
-            // Lógica para manipular a solicitação POST
-
-            if (!mnt.CompanyExists(company.document.Trim()))
+            try
             {
-                if (mnt.InsertCompany(company))
-                {
-                    utl.EscreverArquivo("Alright!");
-                    return Ok($"Recebido!");
-                }
-                else
-                {
-                    utl.EscreverArquivo("Was not possible to insert");
-                    return BadRequest($"Ooops!");
-                }
+                var insertCompany = new Company();
+
+                insertCompany.name = company.name;
+                insertCompany.document = company.document;
+                insertCompany.head_mail = company.head_mail;
+                insertCompany.head_phonenumber = company.head_phonenumber;
+                insertCompany.enabled = 1;
+                insertCompany.created_at = DateTime.Now;
+
+                _context.Add(insertCompany);
+                _context.SaveChanges();
+                return Ok(insertCompany);
             }
-            else
+            catch (Exception ex)
             {
-                utl.EscreverArquivo("Company already exists! " + company.document + " - " + company.name);
-                return BadRequest("Company already exists!");
+                return BadRequest(ex.Message.ToString());
             }
         }
 
         /// <summary>
         /// Atualiza a Companhia
         /// </summary>
-        [HttpPut]
-        public IActionResult UpdateCompany([FromBody] CompanyModel company, int id)
+        [HttpPut("{id}")]
+        public IActionResult UpdateCompany([FromRoute] int id, [FromBody] CompanyModel company)
         {
-            //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
-            Company mnt = new Company(_configuration);
-            Globals utl = new Globals();
-            utl.EscreverArquivo("Starting a update...");
-
-            // Lógica para manipular a solicitação POST
-
-
-            if (mnt.UpdateCompany(company, id))
+            if (!ModelState.IsValid)
             {
-                utl.EscreverArquivo("Alright!");
-                return Ok($"Recebido!");
+                return BadRequest(ModelState);
             }
-            else
+
+            try
             {
-                utl.EscreverArquivo("Was not possible to insert");
-                return BadRequest($"Ooops!");
+                var existingCompany = _context.Company.Find(id);
+
+                existingCompany.name = company.name;
+                existingCompany.document = company.document;
+                existingCompany.head_mail = company.head_mail;
+                existingCompany.head_phonenumber = company.head_phonenumber;
+                //existingCompany.enabled = company.enabled;
+
+                if (existingCompany == null)
+                {
+                    return NotFound("Company not found.");
+                }
+
+                _context.Update(existingCompany);
+                _context.SaveChanges();
+                return Ok(existingCompany);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return StatusCode(500, "Error updating company: " + ex.Message);
             }
         }
 
         /// <summary>
-        /// Exclui a Companhia
+        /// Remove Companhia
         /// </summary>
         [HttpPut]
         public IActionResult DeleteCompany(int id)
         {
-            //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
-            Company mnt = new Company(_configuration);
-            Globals utl = new Globals();
-            utl.EscreverArquivo("Starting a Deletion...");
-
-
-            if (mnt.DeleteCompany(id))
+            if (!ModelState.IsValid)
             {
-                utl.EscreverArquivo("Alright!");
-                return Ok($"Recebido!");
+                return BadRequest(ModelState);
             }
-            else
+
+            try
             {
-                utl.EscreverArquivo("Was not possible to insert");
-                return BadRequest($"Ooops!");
+                var delCompany = _context.Company.Find(id);
+                _context.Remove(delCompany);
+                _context.SaveChanges();
+                return Ok("Registro removido!");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message.ToString());
             }
         }
 
         /// <summary>
-        /// Ativa ou Desativa a Companhia
+        /// Ativa/Desativa Companhia. Basta passar o id e a flag, sendo 1 para ativar e 0 para desativar.
         /// </summary>
-        [HttpPut]
-        public IActionResult EnableDisableCompany(int id, int flag)
+        [HttpPut("{id}")]
+        public IActionResult EnableDisableCompany([FromRoute] int id, [FromBody] int iFlag)
         {
-            //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
-            Company mnt = new Company(_configuration);
-            Globals utl = new Globals();
-            utl.EscreverArquivo("Starting a update...");
-
-
-            if (mnt.DeleteCompany(id))
+            if (!ModelState.IsValid)
             {
-                utl.EscreverArquivo("Alright!");
-                return Ok($"Recebido!");
+                return BadRequest(ModelState);
             }
-            else
+
+            try
             {
-                utl.EscreverArquivo("Was not possible to insert");
-                return BadRequest($"Ooops!");
+                var existingCompany = _context.Company.Find(id);
+                
+                existingCompany.enabled = iFlag;
+
+                if (existingCompany == null)
+                {
+                    return NotFound("Company not found.");
+                }
+
+                _context.Update(existingCompany);
+                _context.SaveChanges();
+                return Ok(existingCompany);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return StatusCode(500, "Error updating company: " + ex.Message);
             }
         }
 
 
-        /// <summary>
-        /// Lista todas as companhias de forma paginada
-        /// </summary>
+        ///// <summary>
+        ///// Lista todas as companhias de forma paginada
+        ///// </summary>
         [HttpGet]
         public IActionResult GetCompanies(int limit, int page)
         {
-            Company mnt = new Company(_configuration);
-            Globals utl = new Globals();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
-            utl.EscreverArquivo("Getting data...");
+            try
+            {
+                var existingCompany = _context.Company.ToList<Company>();
 
-            // Lógica para manipular a solicitação POST
-            dynamic ret = mnt.GetCompanies(limit, page);
+                // Lógica para manipular a solicitação POST
+                var companies = existingCompany
+                   .OrderBy(c => c.name) // or any other column you want to sort by
+                   .Skip((page - 1) * limit)
+                   .Take(limit);
 
-            return Ok(ret);
+                dynamic ret = companies.ToList();
+
+                return Ok(ret);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return StatusCode(500, "Error Listing Company: " + ex.Message);
+            }
         }
 
         /// <summary>
@@ -148,21 +178,21 @@ namespace SensorizMonitoring.Controllers
         [HttpGet]
         public IActionResult GetCompanyById(int id)
         {
-            Company mnt = new Company(_configuration);
-            Globals utl = new Globals();
-
-            //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
-            utl.EscreverArquivo("Getting data...");
-
-            // Lógica para manipular a solicitação POST
-            dynamic ret = mnt.GetCompanyById(id);
-
-            if (ret.Count == 0)
+            if (!ModelState.IsValid)
             {
-                return NoContent();
+                return BadRequest(ModelState);
             }
 
-            return Ok(ret);
+            try
+            {
+                var existingCompany = _context.Company.Find(id);
+
+                return Ok(existingCompany);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return StatusCode(500, "Error Listing Company: " + ex.Message);
+            }
         }
     }
 }

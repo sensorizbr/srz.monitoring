@@ -18,7 +18,7 @@
   {
     "ContainingType": "SensorizMonitoring.Controllers.CompanyController",
     "Method": "EnableDisableCompany",
-    "RelativePath": "Company/EnableDisableCompany",
+    "RelativePath": "Company/EnableDisableCompany/{id}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -26,12 +26,12 @@
       {
         "Name": "id",
         "Type": "System.Int32",
-        "IsRequired": false
+        "IsRequired": true
       },
       {
-        "Name": "flag",
+        "Name": "iFlag",
         "Type": "System.Int32",
-        "IsRequired": false
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []
@@ -92,20 +92,20 @@
   {
     "ContainingType": "SensorizMonitoring.Controllers.CompanyController",
     "Method": "UpdateCompany",
-    "RelativePath": "Company/UpdateCompany",
+    "RelativePath": "Company/UpdateCompany/{id}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "company",
-        "Type": "SensorizMonitoring.Models.CompanyModel",
+        "Name": "id",
+        "Type": "System.Int32",
         "IsRequired": true
       },
       {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": false
+        "Name": "company",
+        "Type": "SensorizMonitoring.Models.CompanyModel",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []
@@ -161,6 +161,26 @@
     "Order": 0,
     "Parameters": [],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SensorizMonitoring.Controllers.MonitoringController",
+    "Method": "GetMonitoring",
+    "RelativePath": "Monitoring/GetMonitoring",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[SensorizMonitoring.Business.Monitoring, SensorizMonitoring, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
     "ContainingType": "SensorizMonitoring.Controllers.MonitoringController",
