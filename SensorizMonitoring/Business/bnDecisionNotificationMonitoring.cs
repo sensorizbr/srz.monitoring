@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using Twilio.AspNet.Common;
 using Zenvia.SMS;
+using ZenviaApi;
 
 namespace SensorizMonitoring.Business
 {
@@ -112,11 +113,11 @@ namespace SensorizMonitoring.Business
                     break;
                 case 5: //cep
 
-                    //monit.pos.cep.ToString());
+                    currentValue = monit.pos.cep;
                     break;
                 case 6: //external power
 
-                    //monit.status.externalPower.ToString());
+                    //currentValue = monit.status.externalPower.ToString();
                     break;
                 case 7: //charging
 
@@ -186,38 +187,20 @@ namespace SensorizMonitoring.Business
 
         private async Task SendNotification(NotificationOwner owner, NotificationSettings setting)
         {
+            bnZenvia zv = new bnZenvia();
             switch (owner.notification_type_id)
             {
                 case (int)NotificationType.Email:
                     // Send email notification
                     break;
                 case (int)NotificationType.Sms:
-                    await SendSmsNotification(owner, setting);
+                    await zv.SendSmsAsync(owner.phone_number, "ALERTA TAL - SMS");
                     break;
                 case (int)NotificationType.WhatsApp:
                     // Send WhatsApp notification
+                    await zv.SendWhatsAppAsync(owner.phone_number, "ALERTA TAL - Whatsapp");
                     break;
             }
-        }
-
-        private async Task SendSmsNotification(NotificationOwner owner, NotificationSettings setting)
-        {
-            //bnZenvia zv = new bnZenvia();
-
-            //var json = new JObject
-            //    {
-            //        { "from", "sms-account" },
-            //        { "to", owner.phone_number},
-            //        { "contents", new JArray(
-            //            new JObject
-            //            {
-            //                { "type", "text" },
-            //                { "text", "Hi Zenvia!" }
-            //            }
-            //        )}
-            //    };
-
-            //await zv.PostApiDataAsync("https://api.zenvia.com/v2/channels/sms/messages", json);
         }
 
 
