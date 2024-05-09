@@ -21,7 +21,7 @@ namespace SensorizMonitoring.Controllers
         public IActionResult SincronizeDeviceReferences()
         {
             //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
-            DeviceReference mf = new DeviceReference(_configuration);
+            bnDeviceReference mf = new bnDeviceReference(_configuration);
             Globals utl = new Globals();
 
             if (mf.SincronizeDeviceReferences())
@@ -41,7 +41,7 @@ namespace SensorizMonitoring.Controllers
         public IActionResult GetAllDeviceReference()
         {
             //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
-            DeviceReference dr = new DeviceReference(_configuration);
+            bnDeviceReference dr = new bnDeviceReference(_configuration);
             Globals utl = new Globals();
 
             return Ok(dr.GetAllDeviceReference());

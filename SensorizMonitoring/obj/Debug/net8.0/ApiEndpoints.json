@@ -2,7 +2,7 @@
   {
     "ContainingType": "SensorizMonitoring.Controllers.CompanyController",
     "Method": "DeleteCompany",
-    "RelativePath": "Company/DeleteCompany",
+    "RelativePath": "Company/DeleteCompany/{id}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -10,7 +10,7 @@
       {
         "Name": "id",
         "Type": "System.Int32",
-        "IsRequired": false
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []
@@ -18,7 +18,7 @@
   {
     "ContainingType": "SensorizMonitoring.Controllers.CompanyController",
     "Method": "EnableDisableCompany",
-    "RelativePath": "Company/EnableDisableCompany/{id}",
+    "RelativePath": "Company/EnableDisableCompany/{id}/{flag}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -29,7 +29,7 @@
         "IsRequired": true
       },
       {
-        "Name": "iFlag",
+        "Name": "flag",
         "Type": "System.Int32",
         "IsRequired": true
       }
@@ -112,6 +112,43 @@
   },
   {
     "ContainingType": "SensorizMonitoring.Controllers.DeviceController",
+    "Method": "EnableDisableDevice",
+    "RelativePath": "Device/EnableDisableDevice/{id}/{flag}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "flag",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SensorizMonitoring.Controllers.DeviceController",
+    "Method": "GetDeviceByCompanyID",
+    "RelativePath": "Device/GetDeviceByCompanyID/{company_id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "company_id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SensorizMonitoring.Controllers.DeviceController",
     "Method": "GetDeviceInformationByDeviceIdAsync",
     "RelativePath": "Device/GetDeviceInformationByDeviceId",
     "HttpMethod": "GET",
@@ -134,6 +171,43 @@
     "IsController": true,
     "Order": 0,
     "Parameters": [
+      {
+        "Name": "device",
+        "Type": "SensorizMonitoring.Models.DeviceModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SensorizMonitoring.Controllers.DeviceController",
+    "Method": "RemoveDevice",
+    "RelativePath": "Device/RemoveDevice/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SensorizMonitoring.Controllers.DeviceController",
+    "Method": "UpdateDevice",
+    "RelativePath": "Device/UpdateDevice/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
       {
         "Name": "device",
         "Type": "SensorizMonitoring.Models.DeviceModel",
@@ -172,7 +246,7 @@
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[SensorizMonitoring.Business.Monitoring, SensorizMonitoring, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[SensorizMonitoring.Data.Models.Monitoring, SensorizMonitoring, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -191,8 +265,114 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "monitoring",
+        "Name": "mnt",
         "Type": "SensorizMonitoring.Models.MonitoringModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SensorizMonitoring.Controllers.MonitoringController",
+    "Method": "ZenviaTest",
+    "RelativePath": "Monitoring/ZenviaTest",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "sPhoneNumber",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SensorizMonitoring.Controllers.NotificationOwnerController",
+    "Method": "EnableDisableNotificationOwner",
+    "RelativePath": "NotificationOwner/EnableDisableNotificationOwner/{id}/{flag}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "flag",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SensorizMonitoring.Controllers.NotificationOwnerController",
+    "Method": "GetNotificationOwnerByDeviceID",
+    "RelativePath": "NotificationOwner/GetNotificationOwnerByDeviceID/{device_id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "device_id",
+        "Type": "System.Int64",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SensorizMonitoring.Controllers.NotificationOwnerController",
+    "Method": "InsertNotificationOwner",
+    "RelativePath": "NotificationOwner/InsertNotificationOwner",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "nom",
+        "Type": "SensorizMonitoring.Models.NotificationOwner.NotificationOwnerModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SensorizMonitoring.Controllers.NotificationOwnerController",
+    "Method": "RemoveNotificationOwner",
+    "RelativePath": "NotificationOwner/RemoveNotificationOwner/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SensorizMonitoring.Controllers.NotificationOwnerController",
+    "Method": "UpdateNotificationOwner",
+    "RelativePath": "NotificationOwner/UpdateNotificationOwner/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "nom",
+        "Type": "SensorizMonitoring.Data.Models.NotificationOwner",
         "IsRequired": true
       }
     ],
@@ -216,8 +396,8 @@
   },
   {
     "ContainingType": "SensorizMonitoring.Controllers.NotificationSettingsController",
-    "Method": "EnableDisableNotificationSettings",
-    "RelativePath": "NotificationSettings/EnableDisableNotificationSettings",
+    "Method": "EnableNotificationSettings",
+    "RelativePath": "NotificationSettings/EnableNotificationSettings/{id}/{flag}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
@@ -225,20 +405,20 @@
       {
         "Name": "id",
         "Type": "System.Int32",
-        "IsRequired": false
+        "IsRequired": true
       },
       {
         "Name": "flag",
         "Type": "System.Int32",
-        "IsRequired": false
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
     "ContainingType": "SensorizMonitoring.Controllers.NotificationSettingsController",
-    "Method": "GetNotificationSettings",
-    "RelativePath": "NotificationSettings/GetNotificationSettings",
+    "Method": "GetAllNotificationsSettings",
+    "RelativePath": "NotificationSettings/GetAllNotificationsSettings/{limit}/{page}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -246,28 +426,28 @@
       {
         "Name": "limit",
         "Type": "System.Int32",
-        "IsRequired": false
+        "IsRequired": true
       },
       {
         "Name": "page",
         "Type": "System.Int32",
-        "IsRequired": false
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
     "ContainingType": "SensorizMonitoring.Controllers.NotificationSettingsController",
-    "Method": "GetNotificationSettingsByDeviceID",
-    "RelativePath": "NotificationSettings/GetNotificationSettingsByDeviceID",
+    "Method": "GetNotificationSettingsByDeviceId",
+    "RelativePath": "NotificationSettings/GetNotificationSettingsByDeviceId/{device_id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "DeviceID",
-        "Type": "System.String",
-        "IsRequired": false
+        "Name": "device_id",
+        "Type": "System.Int64",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []
@@ -275,7 +455,7 @@
   {
     "ContainingType": "SensorizMonitoring.Controllers.NotificationSettingsController",
     "Method": "GetNotificationSettingsById",
-    "RelativePath": "NotificationSettings/GetNotificationSettingsById",
+    "RelativePath": "NotificationSettings/GetNotificationSettingsById/{id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -283,7 +463,7 @@
       {
         "Name": "id",
         "Type": "System.Int32",
-        "IsRequired": false
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []
@@ -307,20 +487,20 @@
   {
     "ContainingType": "SensorizMonitoring.Controllers.NotificationSettingsController",
     "Method": "UpdateNotificationSettings",
-    "RelativePath": "NotificationSettings/UpdateNotificationSettings",
+    "RelativePath": "NotificationSettings/UpdateNotificationSettings/{id}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "company",
-        "Type": "SensorizMonitoring.Models.NotificationsSettings.NotificationSettingsModel",
+        "Name": "id",
+        "Type": "System.Int32",
         "IsRequired": true
       },
       {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": false
+        "Name": "ns",
+        "Type": "SensorizMonitoring.Data.Models.NotificationSettings",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []

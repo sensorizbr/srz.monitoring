@@ -78,6 +78,14 @@
             "Swashbuckle.AspNetCore.ReDoc": {
               "target": "Package",
               "version": "[6.5.0, )"
+            },
+            "Twilio.AspNet.Common": {
+              "target": "Package",
+              "version": "[8.0.2, )"
+            },
+            "Zenvia.SMS": {
+              "target": "Package",
+              "version": "[1.0.3, )"
             }
           },
           "imports": [

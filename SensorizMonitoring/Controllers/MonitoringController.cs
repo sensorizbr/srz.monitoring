@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using SensorizMonitoring.Business;
 using SensorizMonitoring.Data.Context;
 using SensorizMonitoring.Data.Models;
 using SensorizMonitoring.Models;
+using ZenviaApi;
 
 namespace SensorizMonitoring.Controllers
 {
@@ -20,7 +20,13 @@ namespace SensorizMonitoring.Controllers
             _configuration = configuration;
             _context = context;
         }
-        public IActionResult InsertMonitoring([FromBody] MonitoringModel mnt)
+
+        /// <summary>
+        /// Recebe as notificações dos dispositivos da LocoAware
+        /// </summary>
+        
+        [HttpPost]
+        public async Task<IActionResult> InsertMonitoring([FromBody] MonitoringModel mnt)
         {
             if (!ModelState.IsValid)
             {
@@ -29,6 +35,9 @@ namespace SensorizMonitoring.Controllers
             
             try
             {
+                bnDecisionNotificationMonitoring dec = new bnDecisionNotificationMonitoring(_configuration, _context);
+                dec.sendNotification(mnt);
+
                 var insertMonitoring = new Monitoring();
 
                 insertMonitoring.device_id = mnt.deviceId;
@@ -52,8 +61,10 @@ namespace SensorizMonitoring.Controllers
                 insertMonitoring.movement = mnt.status.movement;
                 insertMonitoring.created_at = DateTime.Now;
 
+
                 _context.Add(insertMonitoring);
-                _context.SaveChanges();
+                _context.SaveChangesAsync();
+                //_context.Dispose();
                 return Ok(insertMonitoring);
             }
             catch (DbUpdateConcurrencyException ex)
@@ -67,6 +78,14 @@ namespace SensorizMonitoring.Controllers
         {
             var monitorings = await _context.Monitoring.AsNoTracking().ToListAsync();
             return Ok(monitorings);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> ZenviaTest(string sPhoneNumber)
+        {
+            var smsSender = new bnZenvia("sensoriz.sms", "MCD96l82");
+            await smsSender.SendSmsAsync(sPhoneNumber, "Hello from.NET Core!");
+            return Ok("Enviado com sucesso!");
         }
     }
 }

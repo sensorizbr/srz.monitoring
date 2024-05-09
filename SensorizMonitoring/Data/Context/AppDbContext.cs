@@ -12,5 +12,8 @@ namespace SensorizMonitoring.Data.Context
         public DbSet<Monitoring> Monitoring { get; set; }
         public DbSet<Company> Company { get; set; }
         public DbSet<Device> Device { get; set; }
+        public DbSet<NotificationSettings> NotificationSettings { get; set; }
+        public DbSet<NotificationOwner> NotificationOwner { get; set; }
+        public DbSet<SensorType> SensorType { get; set; }
     }
 }

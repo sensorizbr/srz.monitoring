@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace SensorizMonitoring
@@ -53,6 +54,13 @@ namespace SensorizMonitoring
         {
             // Padrão de expressão regular para verificar a estrutura do email
             return (page - 1) * limit;
+        }
+        public double ToDouble(string value) {
+
+            value = value.Replace(".", ",");
+            CultureInfo culture = new CultureInfo("pt-BR");
+            double result = Double.Parse(value, culture);
+            return result;
         }
     }
 

@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Mysqlx.Crud;
 using Newtonsoft.Json;
 using SensorizMonitoring.Business;
 using SensorizMonitoring.Data.Context;
@@ -26,7 +28,7 @@ namespace SensorizMonitoring.Controllers
         /// Insere o dispositivo apenas na base da Sensoriz
         /// </summary>
         [HttpPost]
-        public IActionResult InsertDevice([FromBody] DeviceModel device)
+        public async Task<IActionResult> InsertDevice([FromBody] DeviceModel device)
         {
             if (!ModelState.IsValid)
             {
@@ -55,10 +57,10 @@ namespace SensorizMonitoring.Controllers
         }
 
         /// <summary>
-        /// Insere o dispositivo apenas na base da Sensoriz
+        /// Atualiza o dispositivo apenas na base da Sensoriz
         /// </summary>
         [HttpPut("{id}")]
-        public IActionResult UpdateDevice([FromRoute] int id, [FromBody] DeviceModel device)
+        public async Task<IActionResult> UpdateDevice(int id, [FromBody] DeviceModel device)
         {
             if (!ModelState.IsValid)
             {
@@ -80,6 +82,88 @@ namespace SensorizMonitoring.Controllers
                 _context.Update(existingDevice);
                 _context.SaveChanges();
                 return Ok(existingDevice);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Ativa e desativa o dispositivo
+        /// </summary>
+        [HttpPut("{id}/{flag}")]
+        public async Task<IActionResult> EnableDisableDevice(int id, int flag)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var existingDevice = _context.Device.Find(id);
+
+                existingDevice.enabled = flag;
+
+                if (existingDevice == null)
+                {
+                    return NotFound("Device not found.");
+                }
+
+                _context.Update(existingDevice);
+                _context.SaveChanges();
+                return Ok(existingDevice);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Remove o dispositivo
+        /// </summary>
+        [HttpPut("{id}")]
+        public async Task<IActionResult> RemoveDevice([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var delDevice = _context.Device.Find(id);
+                _context.Remove(delDevice);
+                _context.SaveChanges();
+                return Ok("Registro removido!");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Lista Todos os Dispositivos por CompanyID
+        /// </summary>
+        [HttpGet("{company_id}")]
+        public async Task<IActionResult> GetDeviceByCompanyID(int company_id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                List<Device> devices = await _context.Device
+                  .Where(d => d.company_id == company_id)
+                  .AsNoTracking()
+                  .ToListAsync();
+
+                return Ok(devices);
             }
             catch (Exception ex)
             {

@@ -7,14 +7,14 @@ namespace SensorizMonitoring.Data.Models
     public class Monitoring
     {
         public int id { get; set; }
-        public string device_id { get; set; }
+        public long device_id { get; set; }
         public double temperature { get; set; }
         public double atmospheric_pressure { get; set; }
         public double lat { get; set; }
         public double lon { get; set; }
-        public string cep { get; set; }
+        public double cep { get; set; }
         public bool external_power { get; set; }
-        public int charging { get; set; }
+        public bool charging { get; set; }
         public double battery_voltage { get; set; }
         public int light_level { get; set; }
         public double orientation_x { get; set; }

@@ -1,6 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using Mysqlx.Crud;
 using Newtonsoft.Json;
 using SensorizMonitoring.Business;
+using SensorizMonitoring.Data.Context;
+using SensorizMonitoring.Data.Models;
 using SensorizMonitoring.Models;
 
 namespace SensorizMonitoring.Controllers
@@ -10,20 +15,39 @@ namespace SensorizMonitoring.Controllers
     public class SensorTypeController : Controller
     {
         private readonly IConfiguration _configuration;
+        private readonly AppDbContext _context;
 
-        public SensorTypeController(IConfiguration configuration)
+        public SensorTypeController(IConfiguration configuration, AppDbContext context)
         {
             _configuration = configuration;
+            _context = context;
         }
 
+        /// <summary>
+        /// Lista Todos os Tipos de Sensores dos Dispositivos
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
-        public IActionResult GetAllSensorType()
+        public async Task<IActionResult> GetAllSensorType()
         {
-            //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
-            SensorType st = new SensorType(_configuration);
-            Globals utl = new Globals();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            return Ok(st.GetAllSensorType());
+            try
+            {
+                var sensorTypeCompany = await _context.SensorType.AsNoTracking().ToListAsync<SensorType>();
+
+                // Lógica para manipular a solicitação POST
+                var sensorTypes = sensorTypeCompany;
+
+                return Ok(sensorTypes.ToList());
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return StatusCode(500, "Error Listing Company: " + ex.Message);
+            }
         }
     }
 }

@@ -24,6 +24,11 @@
             Ativa/Desativa Companhia. Basta passar o id e a flag, sendo 1 para ativar e 0 para desativar.
             </summary>
         </member>
+        <member name="M:SensorizMonitoring.Controllers.CompanyController.GetCompanies(System.Int32,System.Int32)">
+            <summary>
+            Lista todas as companhias de forma paginada
+            </summary>
+        </member>
         <member name="M:SensorizMonitoring.Controllers.CompanyController.GetCompanyById(System.Int32)">
             <summary>
             Lista a Companhia por ID
@@ -36,7 +41,22 @@
         </member>
         <member name="M:SensorizMonitoring.Controllers.DeviceController.UpdateDevice(System.Int32,SensorizMonitoring.Models.DeviceModel)">
             <summary>
-            Insere o dispositivo apenas na base da Sensoriz
+            Atualiza o dispositivo apenas na base da Sensoriz
+            </summary>
+        </member>
+        <member name="M:SensorizMonitoring.Controllers.DeviceController.EnableDisableDevice(System.Int32,System.Int32)">
+            <summary>
+            Ativa e desativa o dispositivo
+            </summary>
+        </member>
+        <member name="M:SensorizMonitoring.Controllers.DeviceController.RemoveDevice(System.Int32)">
+            <summary>
+            Remove o dispositivo
+            </summary>
+        </member>
+        <member name="M:SensorizMonitoring.Controllers.DeviceController.GetDeviceByCompanyID(System.Int32)">
+            <summary>
+            Lista Todos os Dispositivos por CompanyID
             </summary>
         </member>
         <member name="M:SensorizMonitoring.Controllers.DeviceController.GetDeviceInformationByDeviceIdAsync(System.String)">
@@ -54,29 +74,59 @@
             Lista todos os modelos de dispositivos na base de dados da Sensoriz
             </summary>
         </member>
+        <member name="M:SensorizMonitoring.Controllers.MonitoringController.InsertMonitoring(SensorizMonitoring.Models.MonitoringModel)">
+            <summary>
+            Recebe as notificações dos dispositivos da LocoAware
+            </summary>
+        </member>
+        <member name="M:SensorizMonitoring.Controllers.NotificationOwnerController.InsertNotificationOwner(SensorizMonitoring.Models.NotificationOwner.NotificationOwnerModel)">
+            <summary>
+            Insere Owner da Notificação de Monitoramento
+            </summary>
+        </member>
+        <member name="M:SensorizMonitoring.Controllers.NotificationOwnerController.UpdateNotificationOwner(System.Int32,SensorizMonitoring.Data.Models.NotificationOwner)">
+            <summary>
+            Atualiza o Owner da Notificação de Monitoramento
+            </summary>
+        </member>
+        <member name="M:SensorizMonitoring.Controllers.NotificationOwnerController.EnableDisableNotificationOwner(System.Int32,System.Int32)">
+            <summary>
+            Ativa e desativa o Owner da Notificação de Monitoramento
+            </summary>
+        </member>
+        <member name="M:SensorizMonitoring.Controllers.NotificationOwnerController.RemoveNotificationOwner(System.Int32)">
+            <summary>
+            Remove o Owner da Notificação de Monitoramento
+            </summary>
+        </member>
+        <member name="M:SensorizMonitoring.Controllers.NotificationOwnerController.GetNotificationOwnerByDeviceID(System.Int64)">
+            <summary>
+            Lista os Owners da Notificação de Monitoramento por código de dispositivo
+            </summary>
+        </member>
         <member name="M:SensorizMonitoring.Controllers.NotificationSettingsController.InsertNotificationSettings(SensorizMonitoring.Models.NotificationsSettings.NotificationSettingsModel)">
             <summary>
             Cria a configuração de uma notificação de um determinado dispositivo
             </summary>
         </member>
-        <member name="M:SensorizMonitoring.Controllers.NotificationSettingsController.UpdateNotificationSettings(SensorizMonitoring.Models.NotificationsSettings.NotificationSettingsModel,System.Int32)">
+        <member name="M:SensorizMonitoring.Controllers.NotificationSettingsController.UpdateNotificationSettings(System.Int32,SensorizMonitoring.Data.Models.NotificationSettings)">
             <summary>
             Atualiza a configuração de uma notificação de um determinado dispositivo
             </summary>
         </member>
         <member name="M:SensorizMonitoring.Controllers.NotificationSettingsController.DeleteNotificationSettings(System.Int32)">
             <summary>
-            Exclui a configuração de uma notificação de um determinado dispositivo
+            Remove a configuração de uma notificação de um determinado dispositivo
             </summary>
         </member>
-        <member name="M:SensorizMonitoring.Controllers.NotificationSettingsController.EnableDisableNotificationSettings(System.Int32,System.Int32)">
+        <member name="M:SensorizMonitoring.Controllers.NotificationSettingsController.EnableNotificationSettings(System.Int32,System.Int32)">
             <summary>
-            Ativa ou Desativa a configuração de uma notificação de um determinado dispositivo
+            Ativa/Desativa a configuração de uma notificação de um determinado dispositivo
             </summary>
         </member>
-        <member name="M:SensorizMonitoring.Controllers.NotificationSettingsController.GetNotificationSettings(System.Int32,System.Int32)">
+        <member name="M:SensorizMonitoring.Controllers.NotificationSettingsController.GetAllNotificationsSettings(System.Int32,System.Int32)">
             <summary>
-            Lista todas as configurações de uma notificação de um determinado dispositivo
+            Lista todas as configurações de forma paginada
             </summary>
         </member>
         <member name="M:SensorizMonitoring.Controllers.NotificationSettingsController.GetNotificationSettingsById(System.Int32)">
@@ -84,10 +134,16 @@
             Lista a configuração de uma notificação de um determinado dispositivo por ID da Configuração
             </summary>
         </member>
-        <member name="M:SensorizMonitoring.Controllers.NotificationSettingsController.GetNotificationSettingsByDeviceID(System.String)">
+        <member name="M:SensorizMonitoring.Controllers.NotificationSettingsController.GetNotificationSettingsByDeviceId(System.Int64)">
             <summary>
-            Lista a configuração de uma notificação de um determinado dispositivo por ID da Configuração
+            Lista a configuração de uma notificação de um determinado dispositivo por ID do Dispositivo
             </summary>
+        </member>
+        <member name="M:SensorizMonitoring.Controllers.SensorTypeController.GetAllSensorType">
+            <summary>
+            Lista Todos os Tipos de Sensores dos Dispositivos
+            </summary>
+            <returns></returns>
         </member>
     </members>
 </doc>

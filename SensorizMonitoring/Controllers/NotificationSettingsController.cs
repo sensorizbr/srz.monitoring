@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SensorizMonitoring.Business;
+using SensorizMonitoring.Data.Context;
+using SensorizMonitoring.Data.Models;
 using SensorizMonitoring.Models;
 using SensorizMonitoring.Models.NotificationsSettings;
 
@@ -11,172 +14,228 @@ namespace SensorizMonitoring.Controllers
     public class NotificationSettingsController : Controller
     {
         private readonly IConfiguration _configuration;
+        private readonly AppDbContext _context;
 
-        public NotificationSettingsController(IConfiguration configuration)
+        public NotificationSettingsController(IConfiguration configuration, AppDbContext context)
         {
             _configuration = configuration;
+            _context = context;
         }
 
         /// <summary>
         /// Cria a configuração de uma notificação de um determinado dispositivo
         /// </summary>
         [HttpPost]
-        public IActionResult InsertNotificationSettings([FromBody] NotificationSettingsModel ns)
+        public async Task<IActionResult> InsertNotificationSettings([FromBody] NotificationSettingsModel ns)
         {
-            //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
-            NotificationSettings mnt = new NotificationSettings(_configuration);
-            Globals utl = new Globals();
-            utl.EscreverArquivo("Starting a inserction...");
-
-            // Lógica para manipular a solicitação POST
-
-            if (mnt.InsertNotificationSettings(ns))
+            if (!ModelState.IsValid)
             {
-                utl.EscreverArquivo("Alright!");
-                return Ok($"Recebido!");
+                return BadRequest(ModelState);
             }
-            else
+
+            try
             {
-                utl.EscreverArquivo("Was not possible to insert");
-                return BadRequest($"Ooops!");
+                var insertNS = new NotificationSettings();
+
+                insertNS.device_id = ns.device_id;
+                insertNS.sensor_type_id = ns.sensor_type_id;
+                insertNS.comparation_id = ns.comparation_id;
+                insertNS.interval_flag = ns.interval_flag;
+                insertNS.start_value = ns.start_value;
+                insertNS.end_value = ns.end_value;
+                insertNS.exact_value = ns.exact_value;
+                insertNS.enabled = 1;
+                insertNS.created_at = DateTime.Now;
+
+                _context.Add(insertNS);
+                _context.SaveChanges();
+                return Ok(insertNS);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return StatusCode(500, "Error insert notification settings: " + ex.Message);
             }
         }
 
         /// <summary>
         /// Atualiza a configuração de uma notificação de um determinado dispositivo
         /// </summary>
-        [HttpPut]
-        public IActionResult UpdateNotificationSettings([FromBody] NotificationSettingsModel company, int id)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateNotificationSettings(int id, [FromBody] NotificationSettings ns)
         {
-            //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
-            NotificationSettings mnt = new NotificationSettings(_configuration);
-            Globals utl = new Globals();
-            utl.EscreverArquivo("Starting a update...");
-
-            // Lógica para manipular a solicitação POST
-
-
-            if (mnt.UpdateNotificationSettings(company, id))
+            if (!ModelState.IsValid)
             {
-                utl.EscreverArquivo("Alright!");
-                return Ok($"Recebido!");
+                return BadRequest(ModelState);
             }
-            else
+
+            try
             {
-                utl.EscreverArquivo("Was not possible to insert");
-                return BadRequest($"Ooops!");
+                var existingNS = _context.NotificationSettings.Find(id);
+
+                existingNS.device_id = ns.device_id;
+                existingNS.sensor_type_id = ns.sensor_type_id;
+                existingNS.comparation_id = ns.comparation_id;
+                existingNS.interval_flag = ns.interval_flag;
+                existingNS.start_value = ns.start_value;
+                existingNS.end_value = ns.end_value;
+                existingNS.exact_value = ns.exact_value;
+                existingNS.enabled = 1;
+                existingNS.created_at = DateTime.Now;
+
+                if (existingNS == null)
+                {
+                    return NotFound("Notification Settings not found.");
+                }
+
+                _context.Update(existingNS);
+                _context.SaveChanges();
+                return Ok(existingNS);
             }
-        }
-
-        /// <summary>
-        /// Exclui a configuração de uma notificação de um determinado dispositivo
-        /// </summary>
-        [HttpPut]
-        public IActionResult DeleteNotificationSettings(int id)
-        {
-            NotificationSettings mnt = new NotificationSettings(_configuration);
-            Globals utl = new Globals();
-            utl.EscreverArquivo("Starting a Deletion...");
-
-
-            if (mnt.DeleteNotificationSettings(id))
+            catch (DbUpdateConcurrencyException ex)
             {
-                utl.EscreverArquivo("Alright!");
-                return Ok($"Recebido!");
-            }
-            else
-            {
-                utl.EscreverArquivo("Was not possible to insert");
-                return BadRequest($"Ooops!");
-            }
-        }
-
-        /// <summary>
-        /// Ativa ou Desativa a configuração de uma notificação de um determinado dispositivo
-        /// </summary>
-        [HttpPut]
-        public IActionResult EnableDisableNotificationSettings(int id, int flag)
-        {
-            NotificationSettings mnt = new NotificationSettings(_configuration);
-            Globals utl = new Globals();
-            utl.EscreverArquivo("Starting a update...");
-
-
-            if (mnt.DisableEnableNotificationSettings(id, flag))
-            {
-                utl.EscreverArquivo("Alright!");
-                return Ok($"Recebido!");
-            }
-            else
-            {
-                utl.EscreverArquivo("Was not possible to insert");
-                return BadRequest($"Ooops!");
+                return StatusCode(500, "Error to update notification settings: " + ex.Message);
             }
         }
 
 
+
         /// <summary>
-        /// Lista todas as configurações de uma notificação de um determinado dispositivo
+        /// Remove a configuração de uma notificação de um determinado dispositivo
         /// </summary>
-        [HttpGet]
-        public IActionResult GetNotificationSettings(int limit, int page)
+        [HttpPut]
+        public async Task<IActionResult> DeleteNotificationSettings(int id)
         {
-            NotificationSettings mnt = new NotificationSettings(_configuration);
-            Globals utl = new Globals();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
-            utl.EscreverArquivo("Getting data...");
+            try
+            {
+                var delNS = await _context.NotificationSettings.FindAsync(id);
+                _context.Remove(delNS);
+                _context.SaveChanges();
+                return Ok("Registro removido!");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message.ToString());
+            }
+        }
 
-            // Lógica para manipular a solicitação POST
-            dynamic ret = mnt.GetNotificationSettings(limit, page);
+        /// <summary>
+        /// Ativa/Desativa a configuração de uma notificação de um determinado dispositivo
+        /// </summary>
+        [HttpPut("{id}/{flag}")]
+        public async Task<IActionResult> EnableNotificationSettings(int id, int flag)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            return Ok(ret);
+            try
+            {
+                var existingNS = await _context.NotificationSettings.FindAsync(id);
+
+                existingNS.enabled = flag;
+
+                if (existingNS == null)
+                {
+                    return NotFound("Notification Settings not found.");
+                }
+
+                _context.Update(existingNS);
+                _context.SaveChanges();
+                return Ok(existingNS);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return StatusCode(500, "Error updating notification settings: " + ex.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Lista todas as configurações de forma paginada
+        /// </summary>
+        [HttpGet("{limit}/{page}")]
+        public async Task<IActionResult> GetAllNotificationsSettings(int limit, int page)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var existingNS = await _context.NotificationSettings.AsNoTracking().ToListAsync<NotificationSettings>();
+
+                // Lógica para manipular a solicitação POST
+                var notificationsettings = existingNS
+                   .OrderBy(c => c.created_at) // or any other column you want to sort by
+                   .Skip((page - 1) * limit)
+                   .Take(limit);
+
+                return Ok(notificationsettings.ToList());
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return StatusCode(500, "Error Listing Notification Settings: " + ex.Message);
+            }
         }
 
         /// <summary>
         /// Lista a configuração de uma notificação de um determinado dispositivo por ID da Configuração
         /// </summary>
-        [HttpGet]
-        public IActionResult GetNotificationSettingsById(int id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetNotificationSettingsById(int id)
         {
-            NotificationSettings mnt = new NotificationSettings(_configuration);
-            Globals utl = new Globals();
-
-            //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
-            utl.EscreverArquivo("Getting data...");
-
-            // Lógica para manipular a solicitação POST
-            dynamic ret = mnt.GetNotificationSettingsById(id);
-
-            if (ret.Count == 0)
+            if (!ModelState.IsValid)
             {
-                return NoContent();
+                return BadRequest(ModelState);
             }
 
-            return Ok(ret);
+            try
+            {
+                NotificationSettings ns = await _context.NotificationSettings
+                  .Where(d => d.id == id)
+                  .AsNoTracking()
+                  .FirstOrDefaultAsync();
+
+                return Ok(ns);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return StatusCode(500, "Error Listing Notification Settings: " + ex.Message);
+            }
         }
 
+
         /// <summary>
-        /// Lista a configuração de uma notificação de um determinado dispositivo por ID da Configuração
+        /// Lista a configuração de uma notificação de um determinado dispositivo por ID do Dispositivo
         /// </summary>
-        [HttpGet]
-        public IActionResult GetNotificationSettingsByDeviceID(string DeviceID)
+        [HttpGet("{device_id}")]
+        public async Task<IActionResult> GetNotificationSettingsByDeviceId(long device_id)
         {
-            NotificationSettings mnt = new NotificationSettings(_configuration);
-            Globals utl = new Globals();
-
-            //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
-            utl.EscreverArquivo("Getting data...");
-
-            // Lógica para manipular a solicitação POST
-            dynamic ret = mnt.GetNotificationSettingsByDeviceId(DeviceID);
-
-            if (ret.Count == 0)
+            if (!ModelState.IsValid)
             {
-                return NoContent();
+                return BadRequest(ModelState);
             }
 
-            return Ok(ret);
+            try
+            {
+                List<NotificationSettings> ns = await _context.NotificationSettings
+                  .Where(d => d.device_id == device_id)
+                  .AsNoTracking()
+                  .ToListAsync();
+
+                return Ok(ns);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return StatusCode(500, "Error Listing Notification Settings: " + ex.Message);
+            }
         }
     }
 }

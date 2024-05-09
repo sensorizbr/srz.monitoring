@@ -9,11 +9,11 @@ using System.Data;
 
 namespace SensorizMonitoring.Business
 {
-    public class DeviceReference
+    public class bnDeviceReference
     {
         private readonly IConfiguration _configuration;
 
-        public DeviceReference(IConfiguration configuration)
+        public bnDeviceReference(IConfiguration configuration)
         {
             _configuration = configuration;
         }

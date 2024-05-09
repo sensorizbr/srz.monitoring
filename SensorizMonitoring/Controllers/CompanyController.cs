@@ -25,7 +25,7 @@ namespace SensorizMonitoring.Controllers
         /// Insere a Companhia
         /// </summary>
         [HttpPost]
-        public IActionResult InsertCompany([FromBody] CompanyModel company)
+        public async Task<IActionResult> InsertCompany([FromBody] CompanyModel company)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace SensorizMonitoring.Controllers
         /// Atualiza a Companhia
         /// </summary>
         [HttpPut("{id}")]
-        public IActionResult UpdateCompany([FromRoute] int id, [FromBody] CompanyModel company)
+        public async Task<IActionResult> UpdateCompany(int id, [FromBody] CompanyModel company)
         {
             if (!ModelState.IsValid)
             {
@@ -87,8 +87,8 @@ namespace SensorizMonitoring.Controllers
         /// <summary>
         /// Remove Companhia
         /// </summary>
-        [HttpPut]
-        public IActionResult DeleteCompany(int id)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> DeleteCompany(int id)
         {
             if (!ModelState.IsValid)
             {
@@ -111,8 +111,8 @@ namespace SensorizMonitoring.Controllers
         /// <summary>
         /// Ativa/Desativa Companhia. Basta passar o id e a flag, sendo 1 para ativar e 0 para desativar.
         /// </summary>
-        [HttpPut("{id}")]
-        public IActionResult EnableDisableCompany([FromRoute] int id, [FromBody] int iFlag)
+        [HttpPut("{id}/{flag}")]
+        public async Task<IActionResult> EnableDisableCompany(int id,int flag)
         {
             if (!ModelState.IsValid)
             {
@@ -121,9 +121,9 @@ namespace SensorizMonitoring.Controllers
 
             try
             {
-                var existingCompany = _context.Company.Find(id);
-                
-                existingCompany.enabled = iFlag;
+                var existingCompany = await _context.Company.FindAsync(id);
+
+                existingCompany.enabled = flag;
 
                 if (existingCompany == null)
                 {
@@ -141,20 +141,15 @@ namespace SensorizMonitoring.Controllers
         }
 
 
-        ///// <summary>
-        ///// Lista todas as companhias de forma paginada
-        ///// </summary>
+        /// <summary>
+        /// Lista todas as companhias de forma paginada
+        /// </summary>
         [HttpGet]
-        public IActionResult GetCompanies(int limit, int page)
+        public async Task<IActionResult> GetCompanies(int limit, int page)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             try
             {
-                var existingCompany = _context.Company.ToList<Company>();
+                var existingCompany = await _context.Company.AsNoTracking().ToListAsync<Company>();
 
                 // Lógica para manipular a solicitação POST
                 var companies = existingCompany
@@ -162,9 +157,7 @@ namespace SensorizMonitoring.Controllers
                    .Skip((page - 1) * limit)
                    .Take(limit);
 
-                dynamic ret = companies.ToList();
-
-                return Ok(ret);
+                return Ok(companies);
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -176,7 +169,7 @@ namespace SensorizMonitoring.Controllers
         /// Lista a Companhia por ID
         /// </summary>
         [HttpGet]
-        public IActionResult GetCompanyById(int id)
+        public async Task<IActionResult> GetCompanyById(int id)
         {
             if (!ModelState.IsValid)
             {
@@ -185,7 +178,7 @@ namespace SensorizMonitoring.Controllers
 
             try
             {
-                var existingCompany = _context.Company.Find(id);
+                var existingCompany = await _context.Company.FindAsync(id);
 
                 return Ok(existingCompany);
             }

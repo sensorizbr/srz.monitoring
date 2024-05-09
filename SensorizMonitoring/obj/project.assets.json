@@ -905,6 +905,19 @@
           }
         }
       },
+      "RestSharp/106.6.10": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/RestSharp.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/RestSharp.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
         "type": "package",
         "runtimeTargets": {
@@ -2808,6 +2821,40 @@
           "lib/netstandard1.3/System.Xml.XmlSerializer.dll": {}
         }
       },
+      "Twilio.AspNet.Common/8.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Twilio.AspNet.Common.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Twilio.AspNet.Common.dll": {}
+        }
+      },
+      "Zenvia.Core/1.0.0": {
+        "type": "package",
+        "dependencies": {
+          "RestSharp": "106.6.10"
+        },
+        "compile": {
+          "lib/netstandard2.0/Zenvia.Core.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Zenvia.Core.dll": {}
+        }
+      },
+      "Zenvia.SMS/1.0.3": {
+        "type": "package",
+        "dependencies": {
+          "Newtonsoft.Json": "12.0.2",
+          "Zenvia.Core": "1.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Zenvia.SMS.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Zenvia.SMS.dll": {}
+        }
+      },
       "ZstdSharp.Port/0.7.1": {
         "type": "package",
         "compile": {
@@ -4372,6 +4419,21 @@
         "lib/net8.0/Pomelo.EntityFrameworkCore.MySql.xml",
         "pomelo.entityframeworkcore.mysql.8.0.2.nupkg.sha512",
         "pomelo.entityframeworkcore.mysql.nuspec"
+      ]
+    },
+    "RestSharp/106.6.10": {
+      "sha512": "x1FM32hjnVOIn+DKtCs2Y4Q2DCUE5KW08NUXUd4GjgKjE+5PE0F6e9XfUg7nILo05M0TA/HRkRD/SeQ8+duOUA==",
+      "type": "package",
+      "path": "restsharp/106.6.10",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net452/RestSharp.dll",
+        "lib/net452/RestSharp.xml",
+        "lib/netstandard2.0/RestSharp.dll",
+        "lib/netstandard2.0/RestSharp.xml",
+        "restsharp.106.6.10.nupkg.sha512",
+        "restsharp.nuspec"
       ]
     },
     "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
@@ -8903,6 +8965,44 @@
         "system.xml.xmlserializer.nuspec"
       ]
     },
+    "Twilio.AspNet.Common/8.0.2": {
+      "sha512": "264FmpwK/0efs6Y5x86Am+KTvhnWNjfyLbuQKm3kB1AwfJMVMrUIrUZWGmu+qINsC6VFS1EU4xKl4OwZsnG+sQ==",
+      "type": "package",
+      "path": "twilio.aspnet.common/8.0.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "icon.png",
+        "lib/netstandard2.0/Twilio.AspNet.Common.dll",
+        "twilio.aspnet.common.8.0.2.nupkg.sha512",
+        "twilio.aspnet.common.nuspec"
+      ]
+    },
+    "Zenvia.Core/1.0.0": {
+      "sha512": "RSRmrTwaongiEmbUKlnwdAV2PU7yCSbM9KcWbnidV7Vg6MLEbba0tQXwCOV8iUQT7FUZBxjBrQr3qTc37c6vnA==",
+      "type": "package",
+      "path": "zenvia.core/1.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/Zenvia.Core.dll",
+        "zenvia.core.1.0.0.nupkg.sha512",
+        "zenvia.core.nuspec"
+      ]
+    },
+    "Zenvia.SMS/1.0.3": {
+      "sha512": "IqAvUW13XlMyjMtOqHY1VQ2cKofUpUoPfvFB7+gD/v4iGUTLVS96OHF/SVgjHlifm5yCQr6fI3DdP6d53eXEWg==",
+      "type": "package",
+      "path": "zenvia.sms/1.0.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/Zenvia.SMS.dll",
+        "zenvia.sms.1.0.3.nupkg.sha512",
+        "zenvia.sms.nuspec"
+      ]
+    },
     "ZstdSharp.Port/0.7.1": {
       "sha512": "Idgg+mJEyAujqDPzA3APy9dNoyw0YQcNA65GgYjktDRtJ+nvx/hv+J+m6Eax3JJMGEYGy04oc5YNP6ZvQ3Y1vQ==",
       "type": "package",
@@ -8931,7 +9031,9 @@
       "Newtonsoft.Json >= 13.0.3",
       "Pomelo.EntityFrameworkCore.MySql >= 8.0.2",
       "Swashbuckle.AspNetCore >= 6.5.0",
-      "Swashbuckle.AspNetCore.ReDoc >= 6.5.0"
+      "Swashbuckle.AspNetCore.ReDoc >= 6.5.0",
+      "Twilio.AspNet.Common >= 8.0.2",
+      "Zenvia.SMS >= 1.0.3"
     ]
   },
   "packageFolders": {
@@ -9011,6 +9113,14 @@
           "Swashbuckle.AspNetCore.ReDoc": {
             "target": "Package",
             "version": "[6.5.0, )"
+          },
+          "Twilio.AspNet.Common": {
+            "target": "Package",
+            "version": "[8.0.2, )"
+          },
+          "Zenvia.SMS": {
+            "target": "Package",
+            "version": "[1.0.3, )"
           }
         },
         "imports": [
