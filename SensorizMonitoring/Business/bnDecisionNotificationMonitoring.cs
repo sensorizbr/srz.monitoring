@@ -92,7 +92,7 @@ namespace SensorizMonitoring.Business
             Globals gb = new Globals();
             // Get the sensor type ID and comparison ID from the setting
             int sensorTypeId = setting.sensor_type_id;
-            int comparisonId = setting.comparation_id;
+            int comparationId = setting.comparation_id;
 
             // Get the start, end, and exact values from the setting
             double startValue = gb.ToDouble(setting.start_value);
@@ -187,7 +187,7 @@ namespace SensorizMonitoring.Business
             // Decide whether to send a notification based on the comparison type
             if (currentValueDouble > 0)
             {
-                switch (comparisonId)
+                switch (comparationId)
                 {
                     case 1: // Equal to
                         return currentValueDouble == exactValue;
@@ -207,7 +207,7 @@ namespace SensorizMonitoring.Business
             }
             else if (currentValueBool)
             {
-                switch (comparisonId)
+                switch (comparationId)
                 {
                     case 1: // Equal to
                         return currentValueBool == Convert.ToBoolean(exactValue);
@@ -227,7 +227,7 @@ namespace SensorizMonitoring.Business
             }
             else if (!String.IsNullOrEmpty(currentValueString))
             {
-                switch (comparisonId)
+                switch (comparationId)
                 {
                     case 1: // Equal to
                         return currentValueString == currentValueString;
