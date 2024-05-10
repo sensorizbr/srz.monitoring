@@ -168,3 +168,14 @@ C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\RestSharp.dll
 C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\Twilio.AspNet.Common.dll
 C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\Zenvia.Core.dll
 C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\Zenvia.SMS.dll
+C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\OpenTelemetry.dll
+C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\OpenTelemetry.Api.dll
+C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\OpenTelemetry.Api.ProviderBuilderExtensions.dll
+C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\OpenTelemetry.Instrumentation.AspNetCore.dll
+C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\OpenTelemetry.Instrumentation.Http.dll
+C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\Grpc.Core.Api.dll
+C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\Grpc.Net.Client.dll
+C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\Grpc.Net.Common.dll
+C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\Microsoft.Extensions.Configuration.Binder.dll
+C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\OpenTelemetry.Exporter.OpenTelemetryProtocol.dll
+C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\OpenTelemetry.Extensions.Hosting.dll

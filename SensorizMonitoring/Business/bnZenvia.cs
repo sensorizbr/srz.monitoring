@@ -29,7 +29,7 @@ namespace ZenviaApi
             public string text { get; set; }
         }
 
-        public async Task SendSmsAsync(string to, string message)
+        public async Task<bool> SendSmsAsync(string to, string message)
         {
             var body = new MessageRequest
             {
@@ -65,13 +65,10 @@ namespace ZenviaApi
             var responseBody = await response.Content.ReadAsStringAsync();
             var sendSmsResponse = JsonSerializer.Deserialize<SendSmsResponse>(responseBody);
 
-            if (sendSmsResponse.statusCode != "00")
-            {
-                throw new Exception($"Error sending SMS: {sendSmsResponse.detailDescription}");
-            }
+            return true;
         }
 
-        public async Task SendWhatsAppAsync(string to, string message)
+        public async Task<bool> SendWhatsAppAsync(string to, string message)
         {
             var body = new MessageRequest
             {
@@ -93,7 +90,7 @@ namespace ZenviaApi
             var jsonBody = JsonSerializer.Serialize(body);
             var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.zenvia.com/v2/channels/sms/messages")
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.zenvia.com/v2/channels/whatsapp/messages")
             {
                 Content = content
             };
@@ -107,10 +104,7 @@ namespace ZenviaApi
             var responseBody = await response.Content.ReadAsStringAsync();
             var sendSmsResponse = JsonSerializer.Deserialize<SendSmsResponse>(responseBody);
 
-            if (sendSmsResponse.statusCode != "00")
-            {
-                throw new Exception($"Error sending SMS: {sendSmsResponse.detailDescription}");
-            }
+            return true;
         }
     }
 

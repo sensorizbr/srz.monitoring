@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Google.Protobuf;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Asn1.Ocsp;
 using SensorizMonitoring.Data.Context;
@@ -31,7 +34,7 @@ namespace SensorizMonitoring.Business
             _context = context;
         }
 
-        
+
         public bool sendNotification(MonitoringModel monit)
         {
             try
@@ -52,6 +55,8 @@ namespace SensorizMonitoring.Business
             {
                 int ComparationOperator = 0;
                 int IntervalOperatorFlag = 0;
+                string sMessage = string.Empty;
+                string sSensor = string.Empty;
 
                 bnNotificationSettings ns = new bnNotificationSettings(_configuration, _context);
                 List<NotificationSettings> lstSettings = ns.GetNotificationSettingsForDevice(monit.deviceId);
@@ -61,11 +66,14 @@ namespace SensorizMonitoring.Business
 
                 foreach (var setting in lstSettings)
                 {
-                    if (ShouldSendNotification(setting, monit))
+                    if (ShouldSendNotification(setting, monit, ref sMessage, ref sSensor))
                     {
                         foreach (var owner in lstOwners)
                         {
-                             SendNotification(owner, setting);
+                            string sFullMassage = TrataMensagem(owner, sSensor, sMessage);
+                            if (SendNotification(owner, sFullMassage)) { 
+                            
+                            }
                         }
                     }
                 }
@@ -79,7 +87,7 @@ namespace SensorizMonitoring.Business
             }
         }
 
-        private bool ShouldSendNotification(NotificationSettings setting, MonitoringModel monit)
+        private bool ShouldSendNotification(NotificationSettings setting, MonitoringModel monit, ref string sMessage, ref string sSensor)
         {
             Globals gb = new Globals();
             // Get the sensor type ID and comparison ID from the setting
@@ -91,181 +99,248 @@ namespace SensorizMonitoring.Business
             double endValue = gb.ToDouble(setting.end_value);
             double exactValue = gb.ToDouble(setting.exact_value);
 
-            // Get the interval flag from the setting
-            int intervalFlag = setting.interval_flag;
-
             // Cast monit.Value to decimal
-            double currentValue = 0;
+            double currentValueDouble = 0;
+            bool currentValueBool = false;
+            string currentValueString = "";
+            sMessage = "";
+            sSensor = "";
+
             switch (setting.sensor_type_id)
             {
                 case 1: //Temperature
-                    currentValue = monit.status.temperature;
+                    currentValueDouble = monit.status.temperature;
+                    sSensor = "Temperatura";
                     break;
                 case 2: //athmospheric pressure
-                    currentValue = monit.status.atmosphericPressure;
+                    currentValueDouble = monit.status.atmosphericPressure;
+                    sSensor = "Pressão Atmosférica";
                     break;
                 case 3: //lat
-                        //monit.pos.lat.ToString());
+                    //monit.pos.lat.ToString());
                     break;
                 case 4: //lon
-
                     //monit.pos.lon.ToString());
                     break;
                 case 5: //cep
-
-                    currentValue = monit.pos.cep;
+                    currentValueDouble = monit.pos.cep;
+                    sSensor = "CEP";
                     break;
                 case 6: //external power
-
-                    //currentValue = monit.status.externalPower.ToString();
+                    currentValueBool = monit.status.externalPower;
+                    sSensor = "Potência Externa";
                     break;
                 case 7: //charging
-
-                    //monit.status.charging.ToString());
+                    currentValueBool = monit.status.charging;
+                    sSensor = "Status da Carga (Bateria)";
                     break;
                 case 8: //battery_voltage
-
-                    //monit.status.batteryVoltage.ToString());
+                    currentValueDouble = monit.status.batteryVoltage;
+                    sSensor = "Voltagem da Bateria";
                     break;
                 case 9: //light_level
-
-                    //monit.status.lightLevel.ToString());
+                    currentValueDouble = monit.status.lightLevel;
+                    sSensor = "Nível da Luz";
                     break;
                 case 10: //orientation x
-
-                    // monit.status.orientation.x.ToString());
+                    currentValueDouble = monit.status.orientation.x;
+                    sSensor = "Orientação x";
                     break;
                 case 11: //orientation y
-
-                    // monit.status.orientation.y.ToString());
+                    currentValueDouble = monit.status.orientation.y;
+                    sSensor = "Orientação y";
                     break;
                 case 12: //orientation z
-
-                    //monit.status.orientation.z.ToString());
+                    currentValueDouble = monit.status.orientation.z;
+                    sSensor = "Orientação z";
                     break;
                 case 13: //vibration x
-                         // monit.status.vibration.x.ToString());
+                    currentValueDouble = monit.status.vibration.x;
+                    sSensor = "Vibração x";
                     break;
                 case 14: //vibration y
-                         //monit.status.vibration.y.ToString());
+                    currentValueDouble = monit.status.vibration.y;
+                    sSensor = "Vibração y";
                     break;
                 case 15: //vibration z
-                         //monit.status.vibration.z.ToString());
+                    currentValueDouble = monit.status.vibration.z;
+                    sSensor = "Vibração z";
                     break;
                 case 16: //comm_signal
-                         //monit.status.signal.ToString());
+                    currentValueDouble = monit.status.signal;
+                    sSensor = "Status do Sinal de Comunicação";
                     break;
                 case 17: //tamper
-                         // monit.status.tamper.ToString());
+                    currentValueDouble = monit.status.tamper;
+                    sSensor = "Tamper";
                     break;
                 case 18: //movement
-                         //monit.status.movement.ToString());
+                    currentValueString = monit.status.movement;
+                    sSensor = "Movimento Atual";
                     break;
-
-                    break;
+                default:
+                    return false;
             }
+
+            sMessage = "Valor Identificado: " + monit.status.temperature.ToString() + "\n" + "Valor de Referência: " + setting.exact_value.ToString();
 
             // Decide whether to send a notification based on the comparison type
-            switch (comparisonId)
+            if (currentValueDouble > 0)
             {
-                case 1: // Equal to
-                    return currentValue == exactValue;
-                case 2: // Not equal to
-                    return currentValue != exactValue;
-                case 3: // Greater than
-                    return currentValue > exactValue;
-                case 4: // Less than
-                    return currentValue < exactValue;
-                case 5: // Between
-                    return currentValue >= startValue && currentValue <= endValue;
-                case 6: // Outside
-                    return currentValue < startValue || currentValue > endValue;
-                default:
-                    throw new ArgumentException("Invalid comparison ID", nameof(comparisonId));
+                switch (comparisonId)
+                {
+                    case 1: // Equal to
+                        return currentValueDouble == exactValue;
+                    case 2: // Not equal to
+                        return currentValueDouble != exactValue;
+                    case 3: // Greater than
+                        return currentValueDouble > exactValue;
+                    case 4: // Less than
+                        return currentValueDouble < exactValue;
+                    case 5: // Between
+                        return currentValueDouble >= startValue && currentValueDouble <= endValue;
+                    case 6: // Outside
+                        return currentValueDouble < startValue && currentValueDouble > endValue;
+                    default:
+                        return false;
+                }
+            }
+            else if (currentValueBool)
+            {
+                switch (comparisonId)
+                {
+                    case 1: // Equal to
+                        return currentValueBool == Convert.ToBoolean(exactValue);
+                    case 2: // Not equal to
+                        return currentValueBool != Convert.ToBoolean(exactValue);
+                    case 3: // Greater than
+                        return false;
+                    case 4: // Less than
+                        return false;
+                    case 5: // Between
+                        return false;
+                    case 6: // Outside
+                        return false;
+                    default:
+                        return false;
+                }
+            }
+            else if (!String.IsNullOrEmpty(currentValueString))
+            {
+                switch (comparisonId)
+                {
+                    case 1: // Equal to
+                        return currentValueString == currentValueString;
+                    case 2: // Not equal to
+                        return currentValueString == currentValueString;
+                    case 3: // Greater than
+                        return false;
+                    case 4: // Less than
+                        return false;
+                    case 5: // Between
+                        return false;
+                    case 6: // Outside
+                        return false;
+                    default:
+                        return false;
+                }
+            }
+            else
+            {
+                return false;
             }
         }
 
-        private async Task SendNotification(NotificationOwner owner, NotificationSettings setting)
+        private bool SendNotification(NotificationOwner owner, string sMessage)
         {
-            bnZenvia zv = new bnZenvia();
-            switch (owner.notification_type_id)
+            try
             {
-                case (int)NotificationType.Email:
-                    // Send email notification
-                    break;
-                case (int)NotificationType.Sms:
-                    await zv.SendSmsAsync(owner.phone_number, "ALERTA TAL - SMS");
-                    break;
-                case (int)NotificationType.WhatsApp:
-                    // Send WhatsApp notification
-                    await zv.SendWhatsAppAsync(owner.phone_number, "ALERTA TAL - Whatsapp");
-                    break;
+                bnZenvia zv = new bnZenvia();
+                switch (owner.notification_type_id)
+                {
+                    case (int)NotificationType.Email:
+                        // Send email notification
+                        break;
+                    case (int)NotificationType.Sms:
+                        zv.SendSmsAsync(owner.phone_number, sMessage);
+                        break;
+                    case (int)NotificationType.WhatsApp:
+                        // Send WhatsApp notification
+                        zv.SendWhatsAppAsync(owner.phone_number, sMessage);
+                        break;
+                }
+                return true;
+            }
+            catch(Exception ex) {
+                return false;
             }
         }
 
-
-        public bool DecideComparation(int comparationOperator,
-                               int intervalOperatorFlag,
-                               string startValue,
-                               string endValue,
-                               string exactValue,
-                               string referenceValue)
+        public string TrataMensagem(NotificationOwner owner, string Sensor, string sMessage)
         {
-            if (comparationOperator == 1)
+            try
             {
-                if (intervalOperatorFlag == 1) // Is Interval
+                string sFullMessage = string.Empty;
+                switch (owner.notification_type_id)
                 {
-                    return false;
+                    case (int)NotificationType.Email:
+                        // Send email notification
+                        break;
+                    case (int)NotificationType.Sms:
+                        sFullMessage = ":::Alerta Sensoriz:::\n";
+                        sFullMessage += "Sensor Configurado e Identificado: "+ Sensor + "\n";
+                        sFullMessage += "---------------\n";
+                        sFullMessage += sMessage;
+                        break;
+                    case (int)NotificationType.WhatsApp:
+                        sFullMessage = ":::Alerta Sensoriz:::\n";
+                        sFullMessage += "Sensor Configurado e Identificado: " + Sensor + "\n";
+                        sFullMessage += "---------------\n";
+                        sFullMessage += sMessage;
+                        break;
                 }
-                else
-                { // Is not Interval 
-                    return double.Parse(referenceValue) < double.Parse(exactValue);
-                }
+                return sFullMessage;
             }
-            else if (comparationOperator == 2)
+            catch (Exception ex)
             {
-                if (intervalOperatorFlag == 1) // Is Interval
-                {
-                    return false;
-                }
-                else
-                { // Is not Interval 
-                    return referenceValue == exactValue;
-                }
+                return "";
             }
-            else if (comparationOperator == 3)
+        }
+
+        public bool InsertNotificationLog(NotificationSettings st, 
+                                         NotificationOwner on, 
+                                         string sMessage, 
+                                         string sDeviceDescription,
+                                         string sReferenceValue,
+                                         string sMonitoringValue)
+        {
+
+
+            try
             {
-                if (intervalOperatorFlag == 1) // Is Interval
-                {
-                    return false;
-                }
-                else
-                { // Is not Interval 
-                    return double.Parse(referenceValue) > double.Parse(exactValue);
-                }
+                var insertNotificationLog = new NotificationLog();
+
+                insertNotificationLog.device_id = st.device_id;
+                insertNotificationLog.description_device = sDeviceDescription;
+                insertNotificationLog.sensor_type_id = st.sensor_type_id;
+                insertNotificationLog.comparation_id = st.comparation_id;
+                insertNotificationLog.phone_number = on.phone_number;
+                insertNotificationLog.mail = on.mail;
+                insertNotificationLog.message = sMessage;
+                insertNotificationLog.reference_value = sReferenceValue;
+                insertNotificationLog.monitoring_value = sMonitoringValue;
+                insertNotificationLog.created_at = DateTime.Now;
+
+                _context.Add(insertNotificationLog);
+                _context.SaveChanges();
+                //_context.Dispose();
+                return true;
             }
-            else if (comparationOperator == 4)
+            catch (DbUpdateConcurrencyException ex)
             {
-                if (intervalOperatorFlag == 1) // Is Interval
-                {
-                    return double.Parse(referenceValue) < double.Parse(exactValue) && double.Parse(referenceValue) > double.Parse(exactValue);
-                }
-                else
-                { // Is not Interval 
-                    return false;
-                }
-            }
-            else //5
-            {
-                if (intervalOperatorFlag == 1) // Is Interval
-                {
-                    return false;
-                }
-                else
-                { // Is not Interval 
-                    return double.Parse(referenceValue) != double.Parse(exactValue);
-                }
+                return false;
             }
         }
     }
+
 }

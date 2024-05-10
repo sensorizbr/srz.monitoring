@@ -83,7 +83,7 @@ namespace SensorizMonitoring.Controllers
         [HttpPost]
         public async Task<ActionResult> ZenviaTest(string sPhoneNumber)
         {
-            var smsSender = new bnZenvia("sensoriz.sms", "MCD96l82");
+            var smsSender = new bnZenvia();
             await smsSender.SendSmsAsync(sPhoneNumber, "Hello from.NET Core!");
             return Ok("Enviado com sucesso!");
         }
