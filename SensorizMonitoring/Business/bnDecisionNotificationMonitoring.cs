@@ -1,17 +1,9 @@
-﻿using Google.Protobuf;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
-using Newtonsoft.Json.Linq;
-using Org.BouncyCastle.Asn1.Ocsp;
+﻿using Microsoft.EntityFrameworkCore;
 using SensorizMonitoring.Data.Context;
 using SensorizMonitoring.Data.Models;
 using SensorizMonitoring.Models;
-using System;
-using System.Collections.Generic;
-using Twilio.AspNet.Common;
-using Zenvia.SMS;
 using ZenviaApi;
+using static SensorizMonitoring.Models.ZenviaResposeModel;
 
 namespace SensorizMonitoring.Business
 {
@@ -71,7 +63,7 @@ namespace SensorizMonitoring.Business
                         foreach (var owner in lstOwners)
                         {
                             string sFullMassage = TrataMensagem(owner, sSensor, sMessage);
-                            if (SendNotification(owner, sFullMassage)) { 
+                            if (SendNotification(setting, owner, sFullMassage, monit)) { 
                             
                             }
                         }
@@ -251,25 +243,33 @@ namespace SensorizMonitoring.Business
             }
         }
 
-        private bool SendNotification(NotificationOwner owner, string sMessage)
+        private bool SendNotification(NotificationSettings ns, NotificationOwner owner, string sMessage, MonitoringModel monit)
         {
             try
             {
-                bnZenvia zv = new bnZenvia();
+                bnZenvia zv = new bnZenvia(_configuration);
+
+                SendResponse sr = new SendResponse();
+
                 switch (owner.notification_type_id)
                 {
                     case (int)NotificationType.Email:
                         // Send email notification
                         break;
                     case (int)NotificationType.Sms:
-                        zv.SendSmsAsync(owner.phone_number, sMessage);
+                        sr = zv.SendSms(owner.phone_number, sMessage);
                         break;
                     case (int)NotificationType.WhatsApp:
                         // Send WhatsApp notification
-                        zv.SendWhatsAppAsync(owner.phone_number, sMessage);
+                        sr = zv.SendWhatsApp(owner.phone_number, sMessage);
                         break;
                 }
-                return true;
+
+                if (sr.Success)
+                {
+                    return InsertNotificationLog(ns, owner, sMessage, monit.deviceId.ToString());
+                }
+                return false;
             }
             catch(Exception ex) {
                 return false;
@@ -310,9 +310,7 @@ namespace SensorizMonitoring.Business
         public bool InsertNotificationLog(NotificationSettings st, 
                                          NotificationOwner on, 
                                          string sMessage, 
-                                         string sDeviceDescription,
-                                         string sReferenceValue,
-                                         string sMonitoringValue)
+                                         string sDeviceDescription)
         {
 
 
@@ -321,14 +319,14 @@ namespace SensorizMonitoring.Business
                 var insertNotificationLog = new NotificationLog();
 
                 insertNotificationLog.device_id = st.device_id;
-                insertNotificationLog.description_device = sDeviceDescription;
+                insertNotificationLog.description = sDeviceDescription;
                 insertNotificationLog.sensor_type_id = st.sensor_type_id;
                 insertNotificationLog.comparation_id = st.comparation_id;
                 insertNotificationLog.phone_number = on.phone_number;
                 insertNotificationLog.mail = on.mail;
                 insertNotificationLog.message = sMessage;
-                insertNotificationLog.reference_value = sReferenceValue;
-                insertNotificationLog.monitoring_value = sMonitoringValue;
+                insertNotificationLog.reference_value = "";
+                insertNotificationLog.monitoring_value = "";
                 insertNotificationLog.created_at = DateTime.Now;
 
                 _context.Add(insertNotificationLog);

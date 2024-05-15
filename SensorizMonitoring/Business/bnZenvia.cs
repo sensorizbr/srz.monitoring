@@ -1,118 +1,113 @@
-﻿using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
+﻿using Newtonsoft.Json;
 using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+using static SensorizMonitoring.Models.ZenviaResposeModel;
 
 namespace ZenviaApi
 {
     public class bnZenvia
     {
         private readonly HttpClient _httpClient;
+        private readonly IConfiguration _configuration;
 
-        public bnZenvia()
+        public bnZenvia(IConfiguration configuration)
         {
             _httpClient = new HttpClient();
+            _configuration = configuration;
         }
 
-        public class MessageRequest
+        public SendResponse SendSms(string to, string message)
         {
-            public string from { get; set; }
-            public string to { get; set; }
-            public Content[] contents { get; set; }
-        }
+            string ApiToken = _configuration["Settings:ZENVIA_X-API-TOKEN"];
+            string ApiUrl = _configuration["Settings:ZENVIA_URL_SMS"]; 
 
-        public class Content
-        {
-            public string type { get; set; }
-            public string text { get; set; }
-        }
-
-        public async Task<bool> SendSmsAsync(string to, string message)
-        {
             var body = new MessageRequest
             {
                 from = "stormy-donut",
                 to = to.Trim(),
                 contents = new[]
                 {
-                    new Content
-                    {
-                        type = "text",
-                        text = message.Trim()
-                    }
-                }
-            };
-
-            //RQ9d5D5_xUcFEAduucPtuMPnkhQKAF2KH54d
-            //78E30PlUb_lC5KKRpOGzWzTHLXIoSD5bIN4h
-
-            var jsonBody = JsonSerializer.Serialize(body);
-            var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
-
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.zenvia.com/v2/channels/sms/messages")
-            {
-                Content = content
-            };
-
-            request.Headers.Add("X-API-TOKEN", "78E30PlUb_lC5KKRpOGzWzTHLXIoSD5bIN4h");
-
-            var response = await _httpClient.SendAsync(request);
-
-            response.EnsureSuccessStatusCode();
-
-            var responseBody = await response.Content.ReadAsStringAsync();
-            var sendSmsResponse = JsonSerializer.Deserialize<SendSmsResponse>(responseBody);
-
-            return true;
-        }
-
-        public async Task<bool> SendWhatsAppAsync(string to, string message)
-        {
-            var body = new MessageRequest
-            {
-                from = "crimson-manatee",
-                to = to.Trim(),
-                contents = new[]
+                new Content
                 {
-                    new Content
-                    {
-                        type = "text",
-                        text = message.Trim()
-                    }
+                    type = "text",
+                    text = message.Trim()
                 }
+            }
             };
 
-            //RQ9d5D5_xUcFEAduucPtuMPnkhQKAF2KH54d
-            //78E30PlUb_lC5KKRpOGzWzTHLXIoSD5bIN4h
-
-            var jsonBody = JsonSerializer.Serialize(body);
+            var jsonBody = JsonConvert.SerializeObject(body);
             var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://api.zenvia.com/v2/channels/whatsapp/messages")
+            var request = new HttpRequestMessage(HttpMethod.Post, ApiUrl)
             {
                 Content = content
             };
 
-            request.Headers.Add("X-API-TOKEN", "78E30PlUb_lC5KKRpOGzWzTHLXIoSD5bIN4h");
+            request.Headers.Add("X-API-TOKEN", ApiToken);
 
-            var response = await _httpClient.SendAsync(request);
+            var response = _httpClient.Send(request);
 
-            response.EnsureSuccessStatusCode();
+            SendResponse result;
 
-            var responseBody = await response.Content.ReadAsStringAsync();
-            var sendSmsResponse = JsonSerializer.Deserialize<SendSmsResponse>(responseBody);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseBody = response.Content.ReadAsStringAsync().Result;
+                var sendResponse = JsonConvert.DeserializeObject<SendMessageResponse>(responseBody);
+                result = new SendResponse { StatusCode = response.StatusCode, Success = true, Response = sendResponse };
+            }
+            else
+            {
+                result = new SendResponse { StatusCode = response.StatusCode, Success = false, ErrorMessage = $"Error sending SMS message: {response.ReasonPhrase}" };
+            }
 
-            return true;
+            return result;
         }
-    }
 
-    public class SendSmsResponse
-    {
-        public string statusCode { get; set; }
-        public string statusDescription { get; set; }
-        public string detailCode { get; set; }
-        public string detailDescription { get; set; }
+
+        public SendResponse SendWhatsApp(string to, string message)
+        {
+            string ApiToken = _configuration["Settings:ZENVIA_X-API-TOKEN"];
+            string ApiUrl = _configuration["Settings:ZENVIA_URL_WHATSAPP"];
+
+            var body = new MessageRequest
+                {
+                    from = "crimson-manatee",
+                    to = to.Trim(),
+                    contents = new[]
+                    {
+                        new Content
+                        {
+                            type = "text",
+                            text = message.Trim()
+                        }
+                }
+            };
+
+            var jsonBody = JsonConvert.SerializeObject(body);
+            var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+            var request = new HttpRequestMessage(HttpMethod.Post, ApiUrl)
+            {
+                Content = content
+            };
+
+            request.Headers.Add("X-API-TOKEN", ApiToken);
+
+            var response = _httpClient.Send(request);
+
+            SendResponse result;
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseBody = response.Content.ReadAsStringAsync().Result;
+                var sendResponse = JsonConvert.DeserializeObject<SendMessageResponse>(responseBody);
+                result = new SendResponse { StatusCode = response.StatusCode, Success = true, Response = sendResponse };
+            }
+            else
+            {
+                result = new SendResponse { StatusCode = response.StatusCode, Success = false, ErrorMessage = $"Error sending Whatsapp message: {response.ReasonPhrase}" };
+            }
+
+            return result;
+        }
     }
 }
