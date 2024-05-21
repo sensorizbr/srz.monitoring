@@ -35,15 +35,21 @@ namespace SensorizMonitoring.Controllers
 
             try
             {
+                Globals gb = new Globals();
                 var insertNS = new NotificationSettings();
 
                 insertNS.device_id = ns.device_id;
+                insertNS.description = ns.description;
                 insertNS.sensor_type_id = ns.sensor_type_id;
                 insertNS.comparation_id = ns.comparation_id;
-                insertNS.interval_flag = ns.interval_flag;
-                insertNS.start_value = ns.start_value;
-                insertNS.end_value = ns.end_value;
-                insertNS.exact_value = ns.exact_value;
+                insertNS.min_value = ns.min_value;
+                insertNS.max_value = ns.max_value;
+                insertNS.lat_origin = ns.lat_origin;
+                insertNS.long_origin = ns.long_origin;
+                insertNS.lat_destination = ns.lat_destination;
+                insertNS.long_destination = ns.long_destination;
+                insertNS.tolerance_radius = ns.tolerance_radius;
+                insertNS.b_value = ns.b_value;
                 insertNS.enabled = 1;
                 insertNS.created_at = DateTime.Now;
 
@@ -73,12 +79,16 @@ namespace SensorizMonitoring.Controllers
                 var existingNS = _context.NotificationSettings.Find(id);
 
                 existingNS.device_id = ns.device_id;
+                existingNS.description = ns.description;
                 existingNS.sensor_type_id = ns.sensor_type_id;
                 existingNS.comparation_id = ns.comparation_id;
-                existingNS.interval_flag = ns.interval_flag;
-                existingNS.start_value = ns.start_value;
-                existingNS.end_value = ns.end_value;
-                existingNS.exact_value = ns.exact_value;
+                existingNS.min_value = ns.min_value;
+                existingNS.max_value = ns.max_value;
+                existingNS.lat_origin = ns.lat_origin;
+                existingNS.long_origin = ns.long_origin;
+                existingNS.lat_destination = ns.lat_destination;
+                existingNS.long_destination = ns.long_destination;
+                existingNS.b_value = ns.b_value;
                 existingNS.enabled = 1;
                 existingNS.created_at = DateTime.Now;
 

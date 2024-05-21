@@ -17,16 +17,23 @@ namespace SensorizMonitoring.Business
 
         public List<NotificationSettings> GetNotificationSettingsForDevice(long deviceId)
         {
-            if (deviceId == 0) throw new ArgumentNullException(nameof(deviceId));
+            try
+            {
+                if (deviceId == 0) throw new ArgumentNullException(nameof(deviceId));
 
-            List<NotificationSettings> lst = new List<NotificationSettings>();
+                List<NotificationSettings> lst = new List<NotificationSettings>();
 
-            lst = _context.NotificationSettings
-               .Where(d => d.device_id == deviceId)
-               .AsNoTracking()
-               .ToList();
+                lst = _context.NotificationSettings
+                   .Where(d => d.device_id == deviceId)
+                   .AsNoTracking()
+                   .ToList();
 
-            return lst;
+                return lst;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
     }
 }

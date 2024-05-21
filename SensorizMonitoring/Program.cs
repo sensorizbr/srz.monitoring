@@ -4,14 +4,15 @@ using Microsoft.AspNetCore;
 using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using OpenTelemetry.Exporter;
 using System.Diagnostics;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Logs;
 
 namespace SensorizMonitoring
 {
     public class Program
     {
-        private static readonly ActivitySource MyActivitySource = new("OpenTelemetry.Demo.Jaeger");
-
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();

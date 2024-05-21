@@ -87,9 +87,17 @@
               "target": "Package",
               "version": "[1.8.1, )"
             },
+            "OpenTelemetry.Instrumentation.Runtime": {
+              "target": "Package",
+              "version": "[1.8.0, )"
+            },
             "Pomelo.EntityFrameworkCore.MySql": {
               "target": "Package",
               "version": "[8.0.2, )"
+            },
+            "SharpAbp.Abp.OpenTelemetry.Exporter.Prometheus.AspNetCore": {
+              "target": "Package",
+              "version": "[3.3.4, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -106,6 +114,10 @@
             "Zenvia.SMS": {
               "target": "Package",
               "version": "[1.0.3, )"
+            },
+            "prometheus-net.AspNetCore": {
+              "target": "Package",
+              "version": "[8.2.1, )"
             }
           },
           "imports": [

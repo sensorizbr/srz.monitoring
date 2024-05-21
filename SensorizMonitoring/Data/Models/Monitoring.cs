@@ -24,7 +24,7 @@ namespace SensorizMonitoring.Data.Models
         public double vibration_y { get; set; }
         public double vibration_z { get; set; }
         public int com_signal { get; set; }
-        public long tamper { get; set; }
+        public int tamper { get; set; }
         public string movement { get; set; }
         public DateTime created_at { get; set; }
     }

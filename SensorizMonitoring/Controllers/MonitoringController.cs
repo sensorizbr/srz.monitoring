@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using SensorizMonitoring.Business;
 using SensorizMonitoring.Data.Context;
 using SensorizMonitoring.Data.Models;
@@ -14,11 +15,13 @@ namespace SensorizMonitoring.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly AppDbContext _context;
+        private readonly ILogger _logger;
 
-        public MonitoringController(IConfiguration configuration, AppDbContext context)
+        public MonitoringController(IConfiguration configuration, AppDbContext context, ILogger logger)
         {
             _configuration = configuration;
             _context = context;
+            _logger = logger;
         }
 
         /// <summary>
@@ -30,12 +33,15 @@ namespace SensorizMonitoring.Controllers
         {
             if (!ModelState.IsValid)
             {
+                _logger.LogInformation("InsertMonitoring - Bad Request");
                 return BadRequest(ModelState);
             }
             
             try
             {
                 bnDecisionNotificationMonitoring dec = new bnDecisionNotificationMonitoring(_configuration, _context);
+
+                _logger.LogInformation("InsertMonitoring - Let Check Notifications...");
                 dec.sendNotification(mnt);
 
                 var insertMonitoring = new Monitoring();
@@ -65,6 +71,8 @@ namespace SensorizMonitoring.Controllers
                 _context.Add(insertMonitoring);
                 _context.SaveChangesAsync();
                 //_context.Dispose();
+
+                _logger.LogInformation("InsertMonitoring -Monitoring Inserted!");
                 return Ok(insertMonitoring);
             }
             catch (DbUpdateConcurrencyException ex)

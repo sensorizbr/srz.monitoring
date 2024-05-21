@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
+using Microsoft.EntityFrameworkCore;
 using SensorizMonitoring.Data.Context;
 using SensorizMonitoring.Data.Models;
 using SensorizMonitoring.Models;
@@ -63,8 +65,9 @@ namespace SensorizMonitoring.Business
                         foreach (var owner in lstOwners)
                         {
                             string sFullMassage = TrataMensagem(owner, sSensor, sMessage);
-                            if (SendNotification(setting, owner, sFullMassage, monit)) { 
-                            
+                            if (SendNotification(setting, owner, sFullMassage, monit))
+                            {
+
                             }
                         }
                     }
@@ -81,165 +84,205 @@ namespace SensorizMonitoring.Business
 
         private bool ShouldSendNotification(NotificationSettings setting, MonitoringModel monit, ref string sMessage, ref string sSensor)
         {
-            Globals gb = new Globals();
-            // Get the sensor type ID and comparison ID from the setting
-            int sensorTypeId = setting.sensor_type_id;
-            int comparationId = setting.comparation_id;
-
-            // Get the start, end, and exact values from the setting
-            double startValue = gb.ToDouble(setting.start_value);
-            double endValue = gb.ToDouble(setting.end_value);
-            double exactValue = gb.ToDouble(setting.exact_value);
-
-            // Cast monit.Value to decimal
-            double currentValueDouble = 0;
-            bool currentValueBool = false;
-            string currentValueString = "";
             sMessage = "";
             sSensor = "";
+
+            bool ResultMath = false;
+            dynamic monitoringValue = null;
+
+            Globals gb = new Globals();
 
             switch (setting.sensor_type_id)
             {
                 case 1: //Temperature
-                    currentValueDouble = monit.status.temperature;
+                    ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.temperature);
+                    monitoringValue = monit.status.temperature;
                     sSensor = "Temperatura";
                     break;
                 case 2: //athmospheric pressure
-                    currentValueDouble = monit.status.atmosphericPressure;
+                    ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.atmosphericPressure);
+                    monitoringValue = monit.status.atmosphericPressure;
                     sSensor = "Pressão Atmosférica";
                     break;
                 case 3: //lat
-                    //monit.pos.lat.ToString());
+                        //monit.pos.lat.ToString());
+                    ResultMath =  CheckMathComparation_Directions_GetInGetOut(setting.comparation_id, setting.lat_origin, setting.long_origin, monit.pos.lat, monit.pos.lon);
+                    //monitoringValue = monit.pos.lat;
+                    sSensor = "Geolocation (In/Out)";
                     break;
                 case 4: //lon
                     //monit.pos.lon.ToString());
                     break;
                 case 5: //cep
-                    currentValueDouble = monit.pos.cep;
+                    //currentValueDouble = monit.pos.cep;
                     sSensor = "CEP";
                     break;
                 case 6: //external power
-                    currentValueBool = monit.status.externalPower;
+                    ResultMath = CheckMathComparationBool(setting.comparation_id, setting.b_value, monit.status.externalPower);
+                    monitoringValue = monit.status.externalPower;
                     sSensor = "Potência Externa";
                     break;
                 case 7: //charging
-                    currentValueBool = monit.status.charging;
+                    ResultMath = CheckMathComparationBool(setting.comparation_id, setting.b_value, monit.status.charging);
+                    monitoringValue = monit.status.charging;
                     sSensor = "Status da Carga (Bateria)";
                     break;
                 case 8: //battery_voltage
-                    currentValueDouble = monit.status.batteryVoltage;
+                    ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.batteryVoltage);
+                    monitoringValue = monit.status.batteryVoltage;
                     sSensor = "Voltagem da Bateria";
                     break;
                 case 9: //light_level
-                    currentValueDouble = monit.status.lightLevel;
+                    ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.lightLevel);
+                    monitoringValue = monit.status.lightLevel;
                     sSensor = "Nível da Luz";
                     break;
                 case 10: //orientation x
-                    currentValueDouble = monit.status.orientation.x;
+                    ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.orientation.x);
+                    monitoringValue = monit.status.orientation.x;
                     sSensor = "Orientação x";
                     break;
                 case 11: //orientation y
-                    currentValueDouble = monit.status.orientation.y;
+                    ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.orientation.y);
+                    monitoringValue = monit.status.orientation.y;
                     sSensor = "Orientação y";
                     break;
                 case 12: //orientation z
-                    currentValueDouble = monit.status.orientation.z;
+                    ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.orientation.z);
+                    monitoringValue = monit.status.orientation.z;
                     sSensor = "Orientação z";
                     break;
                 case 13: //vibration x
-                    currentValueDouble = monit.status.vibration.x;
+                    ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.vibration.x);
+                    monitoringValue = monit.status.vibration.x;
                     sSensor = "Vibração x";
                     break;
                 case 14: //vibration y
-                    currentValueDouble = monit.status.vibration.y;
+                    ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.vibration.y);
+                    monitoringValue = monit.status.vibration.y;
                     sSensor = "Vibração y";
                     break;
                 case 15: //vibration z
-                    currentValueDouble = monit.status.vibration.z;
+                    ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.vibration.z);
+                    monitoringValue = monit.status.vibration.z;
                     sSensor = "Vibração z";
                     break;
                 case 16: //comm_signal
-                    currentValueDouble = monit.status.signal;
+                    ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.signal);
+                    monitoringValue = monit.status.signal;
                     sSensor = "Status do Sinal de Comunicação";
                     break;
                 case 17: //tamper
-                    currentValueDouble = monit.status.tamper;
+                    ResultMath = CheckMathComparationBool(setting.comparation_id, setting.b_value, gb.IntToBool(monit.status.tamper));
+                    monitoringValue = monit.status.tamper;
                     sSensor = "Tamper";
                     break;
                 case 18: //movement
-                    currentValueString = monit.status.movement;
-                    sSensor = "Movimento Atual";
+                    ResultMath = false;
+                    break;
+                case 19: //Directions
+                    ResultMath = false;
                     break;
                 default:
                     return false;
             }
 
-            sMessage = "Valor Identificado: " + monit.status.temperature.ToString() + "\n" + "Valor de Referência: " + setting.exact_value.ToString();
+            sMessage = GetMessageTemplate(setting, monitoringValue);
 
-            // Decide whether to send a notification based on the comparison type
-            if (currentValueDouble > 0)
+            return ResultMath;
+        }
+
+        public string GetMessageTemplate(NotificationSettings setting, dynamic value)
+        {
+
+            string sMessage = string.Empty;
+            Globals gb = new Globals();
+
+            switch (setting.sensor_type_id)
             {
-                switch (comparationId)
-                {
-                    case 1: // Equal to
-                        return currentValueDouble == exactValue;
-                    case 2: // Not equal to
-                        return currentValueDouble != exactValue;
-                    case 3: // Greater than
-                        return currentValueDouble > exactValue;
-                    case 4: // Less than
-                        return currentValueDouble < exactValue;
-                    case 5: // Between
-                        return currentValueDouble >= startValue && currentValueDouble <= endValue;
-                    case 6: // Outside
-                        return currentValueDouble < startValue && currentValueDouble > endValue;
-                    default:
-                        return false;
-                }
+                case 1:
+                case 2:
+                case 8:
+                case 9:
+                case 10:
+                case 11:
+                case 12:
+                case 13:
+                case 14:
+                case 15:
+                case 16:
+                    sMessage = "Valor Identificado: " + value
+                        + "\n" + "Valor de Referência (Min): " + setting.min_value.ToString()
+                        + "\n" + "Valor de Referência (Max): " + setting.max_value.ToString();
+                    break;
+                case 6:
+                case 7:
+                    sMessage = "Valor Identificado: " + gb.TrataBool(Convert.ToBoolean(value))
+                        + "\n" + "Valor de Referência: " + gb.TrataBool(setting.b_value);
+                    break;
+                case 17:
+                    sMessage = "Tamper: " + gb.TrataTamper(Convert.ToInt32(value))
+                        + "\n" + "Valor de Referência: " + gb.TrataTamper(Convert.ToInt32(setting.min_value));
+                    break;
+                default:
+                    return "";
             }
-            else if (currentValueBool)
+
+            return sMessage;
+        }
+
+        public bool CheckMathComparationDouble(int comparationID, double minValue, double maxValue, double monitoringValue)
+        {
+            switch (comparationID)
             {
-                switch (comparationId)
-                {
-                    case 1: // Equal to
-                        return currentValueBool == Convert.ToBoolean(exactValue);
-                    case 2: // Not equal to
-                        return currentValueBool != Convert.ToBoolean(exactValue);
-                    case 3: // Greater than
-                        return false;
-                    case 4: // Less than
-                        return false;
-                    case 5: // Between
-                        return false;
-                    case 6: // Outside
-                        return false;
-                    default:
-                        return false;
-                }
+                case 1: // Equal to
+                    return minValue == monitoringValue && maxValue == monitoringValue;
+                case 2: // Not equal to
+                    return minValue != monitoringValue && maxValue != monitoringValue;
+                case 3: // Greater than
+                    return monitoringValue > maxValue;
+                case 4: // Less than
+                    return monitoringValue < minValue;
+                case 5: // Between
+                    return monitoringValue >= minValue && monitoringValue <= maxValue;
+                case 6: // Outside
+                    return monitoringValue < minValue && monitoringValue > maxValue;
+                default:
+                    return false;
             }
-            else if (!String.IsNullOrEmpty(currentValueString))
+        }
+
+        public bool CheckMathComparationBool(int comparationID, bool bool_value, bool monitoringValue)
+        {
+            switch (comparationID)
             {
-                switch (comparationId)
-                {
-                    case 1: // Equal to
-                        return currentValueString == currentValueString;
-                    case 2: // Not equal to
-                        return currentValueString == currentValueString;
-                    case 3: // Greater than
-                        return false;
-                    case 4: // Less than
-                        return false;
-                    case 5: // Between
-                        return false;
-                    case 6: // Outside
-                        return false;
-                    default:
-                        return false;
-                }
+                case 1: // Equal to
+                    return bool_value == monitoringValue;
+                case 2: // Not equal to
+                    return bool_value != monitoringValue;
+                case 3: // Greater than
+                    return false;
+                case 4: // Less than
+                    return false;
+                case 5: // Between
+                    return false;
+                case 6: // Outside
+                    return false;
+                default:
+                    return false;
             }
-            else
+        }
+
+        public bool CheckMathComparation_Directions_GetInGetOut(int comparationID, double latDevice, double longDevice, double latSettings, double longSettings)
+        {
+            switch (comparationID)
             {
-                return false;
+                case 1: // Get In To
+                    return latDevice == latSettings && longDevice == longSettings;
+                case 2: // Out To
+                    return latDevice != latSettings && longDevice != longSettings;
+                default:
+                    return false;
             }
         }
 
@@ -271,7 +314,8 @@ namespace SensorizMonitoring.Business
                 }
                 return false;
             }
-            catch(Exception ex) {
+            catch (Exception ex)
+            {
                 return false;
             }
         }
@@ -288,7 +332,7 @@ namespace SensorizMonitoring.Business
                         break;
                     case (int)NotificationType.Sms:
                         sFullMessage = ":::Alerta Sensoriz:::\n";
-                        sFullMessage += "Sensor Configurado e Identificado: "+ Sensor + "\n";
+                        sFullMessage += "Sensor Configurado e Identificado: " + Sensor + "\n";
                         sFullMessage += "---------------\n";
                         sFullMessage += sMessage;
                         break;
@@ -307,9 +351,9 @@ namespace SensorizMonitoring.Business
             }
         }
 
-        public bool InsertNotificationLog(NotificationSettings st, 
-                                         NotificationOwner on, 
-                                         string sMessage, 
+        public bool InsertNotificationLog(NotificationSettings st,
+                                         NotificationOwner on,
+                                         string sMessage,
                                          string sDeviceDescription)
         {
 

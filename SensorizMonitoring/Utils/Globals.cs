@@ -62,6 +62,54 @@ namespace SensorizMonitoring
             double result = Double.Parse(value, culture);
             return result;
         }
+
+        public string TrataTamper(int iValue)
+        {
+            if (iValue == 1)
+            {
+                return "Aberto";
+            }
+            else
+            {
+                return "Fechado";
+            }
+        }
+
+        public string TrataBool(bool bValue)
+        {
+            if (bValue)
+            {
+                return "Sim";
+            }
+            else
+            {
+                return "Não";
+            }
+        }
+
+        public bool IntToBool(int iValue)
+        {
+            if (iValue == 0)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public int BoolToInt(bool bValue)
+        {
+            if (bValue)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
     }
 
 }

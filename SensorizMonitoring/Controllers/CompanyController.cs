@@ -14,11 +14,13 @@ namespace SensorizMonitoring.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly AppDbContext _context;
+        private readonly ILogger _logger;
 
-        public CompanyController(IConfiguration configuration, AppDbContext context)
+        public CompanyController(IConfiguration configuration, AppDbContext context, ILogger logger)
         {
             _configuration = configuration;
             _context = context;
+            _logger = logger;
         }
 
         /// <summary>
