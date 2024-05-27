@@ -59,7 +59,7 @@
             Lista Todos os Dispositivos por CompanyID
             </summary>
         </member>
-        <member name="M:SensorizMonitoring.Controllers.DeviceController.GetDeviceInformationByDeviceIdAsync(System.String)">
+        <member name="M:SensorizMonitoring.Controllers.DeviceController.GetDeviceInformationByDeviceId(System.String)">
             <summary>
             Pega as informações do Dispositivo na API da LocoAware pelo Device Code.
             </summary>

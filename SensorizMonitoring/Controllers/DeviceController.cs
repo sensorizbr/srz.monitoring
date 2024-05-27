@@ -1,13 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Mysqlx.Crud;
+using Nancy.Json;
 using Newtonsoft.Json;
 using SensorizMonitoring.Business;
 using SensorizMonitoring.Data.Context;
 using SensorizMonitoring.Data.Models;
 using SensorizMonitoring.Models;
+using SensorizMonitoring.Utils;
+using System.Collections.Generic;
+using System.Text.Json;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using static SensorizMonitoring.Business.bnDevice;
 
 namespace SensorizMonitoring.Controllers
 {
@@ -42,7 +45,6 @@ namespace SensorizMonitoring.Controllers
                 insertCompany.device_code = device.device_code;
                 insertCompany.company_id = device.company_id;
                 insertCompany.description = device.description;
-                insertCompany.device_reference_id = device.device_reference_id;
                 insertCompany.enabled = 1;
                 insertCompany.created_at = DateTime.Now;
 
@@ -124,7 +126,7 @@ namespace SensorizMonitoring.Controllers
         /// <summary>
         /// Remove o dispositivo
         /// </summary>
-        [HttpPut("{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> RemoveDevice([FromRoute] int id)
         {
             if (!ModelState.IsValid)
@@ -151,6 +153,8 @@ namespace SensorizMonitoring.Controllers
         [HttpGet("{company_id}")]
         public async Task<IActionResult> GetDeviceByCompanyID(int company_id)
         {
+            bnDevice dv = new bnDevice(_configuration);
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -158,10 +162,32 @@ namespace SensorizMonitoring.Controllers
 
             try
             {
-                List<Device> devices = await _context.Device
-                  .Where(d => d.company_id == company_id)
-                  .AsNoTracking()
-                  .ToListAsync();
+                var devices = await _context.Device
+                .Where(d => d.company_id == company_id)
+                .AsNoTracking()
+                .Select(d => new DeviceResponseTable
+                {
+                    id = d.id,
+                    device_code = d.device_code,
+                    description = d.description,
+                    created_at = d.created_at,
+                })
+                .ToListAsync();
+
+                LocoDevicesResponse dr = await dv.GetDevicesToList();
+                List<DeviceResponseTable> dvcTable = new List<DeviceResponseTable>();
+
+                // Merge the lists
+                foreach (var locoDevice in dr.results)
+                {
+                    var device = devices.Find(d => d.device_code == locoDevice.id);
+                    if (device != null)
+                    {
+                        device.model = locoDevice.model.product;
+                        if (locoDevice.firmware != null) { device.firmware = locoDevice.firmware.current; }
+                        device.charging = locoDevice.statusIndicators.charging;
+                    }
+                }
 
                 return Ok(devices);
             }
@@ -175,16 +201,40 @@ namespace SensorizMonitoring.Controllers
         /// Pega as informações do Dispositivo na API da LocoAware pelo Device Code.
         /// </summary>
         [HttpGet]
-        public async Task<IActionResult> GetDeviceInformationByDeviceIdAsync(string sDeviceId)
+        public IActionResult GetDeviceInformationByDeviceId(string sDeviceId)
         {
-            //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);
-            bnDevice dvc = new bnDevice(_configuration);
-            Globals utl = new Globals();
-            utl.EscreverArquivo("Starting a Listing...");
+            string sql = string.Empty;
 
-            // Lógica para manipular a solicitação POST
+            var baseUrl = _configuration["Settings:LocoBaseUrl"];
+            var token = _configuration["Settings:LocoToken"];
+            //var endpoint = "getDevice";
 
-            return Content(await dvc.GetDeviceInformationByDeviceId(sDeviceId));
+            Include inc = new Include();
+            inc.pairings = false;
+
+            DeviceInformationRequest dir = new DeviceInformationRequest();
+            dir.device = sDeviceId;
+            dir.include = inc;
+
+            var apiClient = new ApiClient(baseUrl, token);
+
+            try
+            {
+                string data = apiClient.GetApiData(baseUrl + "device/" + sDeviceId);
+                Console.WriteLine($"Dados obtidos com sucesso: {data}");
+
+                // Deserialize the JSON data into a dynamic object
+                var serializer = new JavaScriptSerializer();
+                dynamic deviceInfo = serializer.Deserialize<dynamic>(data);
+
+                // Return the deserialized object as JSON
+                return Ok(deviceInfo);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao obter dados: {ex.Message}");
+                return StatusCode(500);
+            }
         }
     }
 }

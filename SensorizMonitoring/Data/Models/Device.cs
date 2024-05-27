@@ -9,7 +9,6 @@ namespace SensorizMonitoring.Data.Models
         public string device_code { get; set; }
         public int company_id { get; set; }
         public string description { get; set; }
-        public int device_reference_id { get; set; }
         public int enabled { get; set; }
         public DateTime created_at { get; set; }
     }

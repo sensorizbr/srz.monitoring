@@ -149,7 +149,7 @@
   },
   {
     "ContainingType": "SensorizMonitoring.Controllers.DeviceController",
-    "Method": "GetDeviceInformationByDeviceIdAsync",
+    "Method": "GetDeviceInformationByDeviceId",
     "RelativePath": "Device/GetDeviceInformationByDeviceId",
     "HttpMethod": "GET",
     "IsController": true,
@@ -183,7 +183,7 @@
     "ContainingType": "SensorizMonitoring.Controllers.DeviceController",
     "Method": "RemoveDevice",
     "RelativePath": "Device/RemoveDevice/{id}",
-    "HttpMethod": "PUT",
+    "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
     "Parameters": [

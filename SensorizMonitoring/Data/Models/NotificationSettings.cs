@@ -22,7 +22,7 @@ namespace SensorizMonitoring.Data.Models
         public double long_origin { get; set; }
         public double lat_destination { get; set; }
         public double long_destination { get; set; }
-        public int tolerance_radius { get; set; }
+        public int? tolerance_radius { get; set; }
         public bool b_value { get; set; }
         public int enabled { get; set; }
         public DateTime created_at { get; set; }
