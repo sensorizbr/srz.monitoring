@@ -17,12 +17,18 @@ namespace SensorizMonitoring.Business
 
         public List<NotificationOwner> GetNotificationOwnersForDevice(long deviceId)
         {
-            if (deviceId == 0) throw new ArgumentNullException(nameof(deviceId));
+            try
+            {
+                if (deviceId == 0) throw new ArgumentNullException(nameof(deviceId));
 
-            return _context.NotificationOwner
-              .Where(d => d.device_id == deviceId)
-              .AsNoTracking()
-              .ToList();
+                return _context.NotificationOwner
+                  .Where(d => d.device_id == deviceId && d.enabled == 1)
+                  .AsNoTracking()
+                  .ToList();
+            }
+            catch (Exception ex) {
+                return null;
+            }
         }
     }
 }

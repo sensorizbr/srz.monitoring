@@ -1,5 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using Google.Protobuf.WellKnownTypes;
+using IdentityModel.Client;
+using Newtonsoft.Json;
+using SensorizMonitoring.Data.Models;
+using SensorizMonitoring.Models;
+using SensorizMonitoring.Templates;
 using System.Text;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 using static SensorizMonitoring.Models.ZenviaResposeModel;
 
 namespace ZenviaApi
@@ -18,7 +24,7 @@ namespace ZenviaApi
         public SendResponse SendSms(string to, string message)
         {
             string ApiToken = _configuration["Settings:ZENVIA_X-API-TOKEN"];
-            string ApiUrl = _configuration["Settings:ZENVIA_URL_SMS"]; 
+            string ApiUrl = _configuration["Settings:ZENVIA_URL_SMS"];
 
             var body = new MessageRequest
             {
@@ -62,27 +68,26 @@ namespace ZenviaApi
             return result;
         }
 
-
-        public SendResponse SendWhatsApp(string to, string message)
+        public SendResponse SendWhatsApp(string to, dynamic varsfieldsTemplate, string sTemplateID)
         {
             string ApiToken = _configuration["Settings:ZENVIA_X-API-TOKEN"];
             string ApiUrl = _configuration["Settings:ZENVIA_URL_WHATSAPP"];
+            string ApiSender = _configuration["Settings:ZENVIA_WHATSAPP_SENDER"];
+            //string ApiTemplateID = _configuration["Settings:ZENVIA_WHATSAPP_TEMPLATE_ID"];
 
-            var body = new MessageRequest
-                {
-                    from = "crimson-manatee",
-                    to = to.Trim(),
-                    contents = new[]
-                    {
-                        new Content
-                        {
-                            type = "text",
-                            text = message.Trim()
-                        }
-                }
-            };
+            WhatsAppContent wpContents = new WhatsAppContent();
+            wpContents.type = "template";
+            wpContents.templateId = sTemplateID;
+            wpContents.fields = varsfieldsTemplate;
 
-            var jsonBody = JsonConvert.SerializeObject(body);
+            WhatsAppMensagem wpMessage = new WhatsAppMensagem();
+            wpMessage.from = ApiSender;
+            wpMessage.to = to.Trim();
+            
+            wpMessage.contents = new List<WhatsAppContent>();
+            wpMessage.contents.Add(wpContents);
+
+            var jsonBody = JsonConvert.SerializeObject(wpMessage);
             var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
             var request = new HttpRequestMessage(HttpMethod.Post, ApiUrl)

@@ -1,9 +1,11 @@
-﻿using Google.Protobuf;
-using Google.Protobuf.WellKnownTypes;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using SensorizMonitoring.Data.Context;
 using SensorizMonitoring.Data.Models;
 using SensorizMonitoring.Models;
+using SensorizMonitoring.Templates;
+using SensorizMonitoring.Utils;
+using System.Reflection;
 using ZenviaApi;
 using static SensorizMonitoring.Models.ZenviaResposeModel;
 
@@ -14,12 +16,70 @@ namespace SensorizMonitoring.Business
 
         private readonly IConfiguration _configuration;
         private readonly AppDbContext _context;
+        Globals gb = new Globals();
 
         public enum NotificationType
         {
             Email = 1,
             Sms = 2,
             WhatsApp = 3
+        }
+
+        public enum SensorType
+        {
+            [Description("Temperatura")]
+            Temperatura = 1,
+
+            [Description("Pressão Atmosférica")]
+            PressaoAtmosferica = 2,
+
+            [Description("Geolocalização (Fora do Ponto)")]
+            Geolocation = 3,
+
+            [Description("Geolocalização (Rota)")]
+            Cep = 4,
+
+            [Description("Potência Externa")]
+            PotenciaExterna = 5,
+
+            [Description("Status Bateria")]
+            StatusBateria = 6,
+
+            [Description("Voltagem Bateria")]
+            VoltagemBateria = 7,
+
+            [Description("Nível da Luz")]
+            NivelLuz = 8,
+
+            [Description("Orientation x")]
+            OrientationX = 9,
+
+            [Description("Orientation y")]
+            OrientationY = 10,
+
+            [Description("Orientation z")]
+            OrientationZ = 11,
+
+            [Description("Vibration x")]
+            VibrationX = 12,
+
+            [Description("Vibration y")]
+            VibrationY = 13,
+
+            [Description("Vibration z")]
+            VibrationZ = 14,
+
+            [Description("Status Sinal Comunicação")]
+            StatusSinalCom = 15,
+
+            [Description("Tamper")]
+            Tamper = 16,
+
+            [Description("Movimentação")]
+            Movement = 17,
+
+            [Description("Direção")]
+            Direction = 18
         }
 
         public bnDecisionNotificationMonitoring(IConfiguration configuration, AppDbContext context)
@@ -47,10 +107,11 @@ namespace SensorizMonitoring.Business
         {
             try
             {
-                int ComparationOperator = 0;
-                int IntervalOperatorFlag = 0;
                 string sMessage = string.Empty;
                 string sSensor = string.Empty;
+                string sTemplateID = string.Empty;
+                bool isRecovery = false;
+                dynamic fields = false;
 
                 bnNotificationSettings ns = new bnNotificationSettings(_configuration, _context);
                 List<NotificationSettings> lstSettings = ns.GetNotificationSettingsForDevice(monit.deviceId);
@@ -58,19 +119,32 @@ namespace SensorizMonitoring.Business
                 bnNotificationOwner no = new bnNotificationOwner(_configuration, _context);
                 List<NotificationOwner> lstOwners = no.GetNotificationOwnersForDevice(monit.deviceId);
 
-                foreach (var setting in lstSettings)
+                if (lstSettings.Count > 0)
                 {
-                    if (ShouldSendNotification(setting, monit, ref sMessage, ref sSensor))
+                    foreach (var setting in lstSettings)
                     {
-                        foreach (var owner in lstOwners)
+                        if (ShouldSendNotification(setting, monit, ref fields, ref sSensor, ref isRecovery, ref sTemplateID))
                         {
-                            string sFullMassage = TrataMensagem(owner, sSensor, sMessage);
-                            if (SendNotification(setting, owner, sFullMassage, monit))
+                            foreach (var owner in lstOwners)
                             {
-
+                                if (SendNotification(setting, owner, fields, monit, sTemplateID))
+                                {
+                                    if (isRecovery)
+                                    {
+                                        DeleteNotificationControl(setting.device_id, setting.id, isRecovery);
+                                    }
+                                    else
+                                    {
+                                        InsertNotificationControl(setting);
+                                    }
+                                }
                             }
                         }
                     }
+                }
+                else
+                {
+                    return false;
                 }
 
                 return true;
@@ -82,100 +156,130 @@ namespace SensorizMonitoring.Business
             }
         }
 
-        private bool ShouldSendNotification(NotificationSettings setting, MonitoringModel monit, ref string sMessage, ref string sSensor)
+        private bool ShouldSendNotification(NotificationSettings setting, MonitoringModel monit, ref dynamic fields, ref string sSensor, ref bool isRecovery, ref string sTemplateID)
         {
-            sMessage = "";
             sSensor = "";
 
             bool ResultMath = false;
             dynamic monitoringValue = null;
+            string unitOfMeasurement = "";
+            isRecovery = ExistsNotificationControl(setting);
+            string evento = string.Empty;
 
             Globals gb = new Globals();
 
             switch (setting.sensor_type_id)
             {
                 case 1: //Temperature
-                    ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.temperature);
+                    if (isRecovery)
+                    {
+                        ResultMath = CheckMathRecoveryDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.temperature);
+                        setting.priority = "RETORNO AO PADRÃO";
+                    }
+                    else
+                    {
+                        ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.temperature);
+                    }
+
                     monitoringValue = monit.status.temperature;
-                    sSensor = "Temperatura";
+                    unitOfMeasurement = " ºC";
+                    fields = GetMessageTemplate(setting, monit.status.temperature, 0, 0, unitOfMeasurement, "");
+                    sTemplateID = _configuration["Settings:ZENVIA_WHATSAPP_TEMPLATE_ID"];
+
                     break;
                 case 2: //athmospheric pressure
-                    ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.atmosphericPressure);
-                    monitoringValue = monit.status.atmosphericPressure;
-                    sSensor = "Pressão Atmosférica";
+                    if (isRecovery)
+                    {
+                        ResultMath = CheckMathRecoveryDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.atmosphericPressure);
+                        setting.priority = "RETORNO AO PADRÃO";
+                    }
+                    else
+                    {
+                        ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.atmosphericPressure);
+                    }
+
+
+                    unitOfMeasurement = " hPa";
+                    fields = GetMessageTemplate(setting, monit.status.atmosphericPressure, 0, 0, unitOfMeasurement, "");
+                    sTemplateID = _configuration["Settings:ZENVIA_WHATSAPP_TEMPLATE_ID"];
                     break;
-                case 3: //lat
-                        //monit.pos.lat.ToString());
-                    ResultMath =  CheckMathComparation_Directions_GetInGetOut(setting.comparation_id, setting.lat_origin, setting.long_origin, monit.pos.lat, monit.pos.lon);
-                    //monitoringValue = monit.pos.lat;
-                    sSensor = "Geolocation (In/Out)";
+                case 3: //lat (entrada e saída)
+                    if (monit.pos is not null && (monit.status.movement.Equals("STATIONARY")))
+                    {
+                        if (isRecovery)
+                            ResultMath = CheckMathComparation_Directions_GetInGetOut_Recovery(setting.comparation_id, setting.lat_origin, setting.long_origin, monit.pos.lat, monit.pos.lon, setting.tolerance_radius, ref evento);
+                        else
+                            ResultMath = CheckMathComparation_Directions_GetInGetOut(setting.comparation_id, setting.lat_origin, setting.long_origin, monit.pos.lat, monit.pos.lon, setting.tolerance_radius, ref evento);
+
+
+                        fields = GetMessageTemplate(setting, 0, monit.pos.lat, monit.pos.lon, unitOfMeasurement, evento);
+                        sTemplateID = _configuration["Settings:ZENVIA_WHATSAPP_TEMPLATE_ID_GEOINOUT"];
+                    }
+                    else if (monit.pos is not null && monit.status.movement.Equals("MOVING"))
+                    {
+                        evento = "EM MOVIMENTAÇÃO";
+                        ResultMath = true;
+                    }
+                    else
+                    {
+                        ResultMath = false;
+                    }
                     break;
                 case 4: //lon
                     //monit.pos.lon.ToString());
+                    bnSensorRoute route = new bnSensorRoute();
+                    ResultMath = route.isOnRoute(setting.lat_origin, setting.long_origin, setting.lat_destination, setting.long_destination, monit.pos.lat, monit.pos.lon, (double)setting.tolerance_radius);
                     break;
                 case 5: //cep
                     //currentValueDouble = monit.pos.cep;
-                    sSensor = "CEP";
                     break;
                 case 6: //external power
                     ResultMath = CheckMathComparationBool(setting.comparation_id, setting.b_value, monit.status.externalPower);
                     monitoringValue = monit.status.externalPower;
-                    sSensor = "Potência Externa";
                     break;
                 case 7: //charging
                     ResultMath = CheckMathComparationBool(setting.comparation_id, setting.b_value, monit.status.charging);
                     monitoringValue = monit.status.charging;
-                    sSensor = "Status da Carga (Bateria)";
                     break;
                 case 8: //battery_voltage
                     ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.batteryVoltage);
                     monitoringValue = monit.status.batteryVoltage;
-                    sSensor = "Voltagem da Bateria";
                     break;
                 case 9: //light_level
                     ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.lightLevel);
                     monitoringValue = monit.status.lightLevel;
-                    sSensor = "Nível da Luz";
                     break;
                 case 10: //orientation x
                     ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.orientation.x);
                     monitoringValue = monit.status.orientation.x;
-                    sSensor = "Orientação x";
                     break;
                 case 11: //orientation y
                     ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.orientation.y);
                     monitoringValue = monit.status.orientation.y;
-                    sSensor = "Orientação y";
                     break;
                 case 12: //orientation z
                     ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.orientation.z);
                     monitoringValue = monit.status.orientation.z;
-                    sSensor = "Orientação z";
                     break;
                 case 13: //vibration x
                     ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.vibration.x);
                     monitoringValue = monit.status.vibration.x;
-                    sSensor = "Vibração x";
                     break;
                 case 14: //vibration y
                     ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.vibration.y);
                     monitoringValue = monit.status.vibration.y;
-                    sSensor = "Vibração y";
                     break;
                 case 15: //vibration z
                     ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.vibration.z);
                     monitoringValue = monit.status.vibration.z;
-                    sSensor = "Vibração z";
                     break;
                 case 16: //comm_signal
                     ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.signal);
                     monitoringValue = monit.status.signal;
-                    sSensor = "Status do Sinal de Comunicação";
                     break;
                 case 17: //tamper
                     ResultMath = CheckMathComparationBool(setting.comparation_id, setting.b_value, gb.IntToBool(monit.status.tamper));
                     monitoringValue = monit.status.tamper;
-                    sSensor = "Tamper";
                     break;
                 case 18: //movement
                     ResultMath = false;
@@ -187,52 +291,129 @@ namespace SensorizMonitoring.Business
                     return false;
             }
 
-            sMessage = GetMessageTemplate(setting, monitoringValue);
+            if (ResultMath)
+            {
+                sSensor = GetDescriptionFromValue(setting.sensor_type_id);
+            }
 
             return ResultMath;
         }
-
-        public string GetMessageTemplate(NotificationSettings setting, dynamic value)
+        public static string GetDescriptionFromValue(int value)
         {
+            SensorType sensorType = (SensorType)System.Enum.ToObject(typeof(SensorType), value);
+            return GetDescription(sensorType);
+        }
 
-            string sMessage = string.Empty;
-            Globals gb = new Globals();
+        public static string GetDescription(Enum value)
+        {
+            FieldInfo fi = value.GetType().GetField(value.ToString());
 
+            DescriptionAttribute[] attributes =
+                (DescriptionAttribute[])fi.GetCustomAttributes(
+                    typeof(DescriptionAttribute),
+                    false);
+
+            if (attributes != null && attributes.Length > 0)
+                return attributes[0].Description;
+            else
+                return value.ToString();
+        }
+
+        public dynamic GetMessageTemplate(NotificationSettings setting, dynamic value, double lat, double lon, string unitOfMeasurement, string evento)
+        {
             switch (setting.sensor_type_id)
             {
                 case 1:
                 case 2:
-                case 8:
-                case 9:
-                case 10:
-                case 11:
-                case 12:
-                case 13:
-                case 14:
-                case 15:
-                case 16:
-                    sMessage = "Valor Identificado: " + value
-                        + "\n" + "Valor de Referência (Min): " + setting.min_value.ToString()
-                        + "\n" + "Valor de Referência (Max): " + setting.max_value.ToString();
+                    return new
+                    {
+                        icon = DecideIcon(setting.priority),
+                        codigo = setting.device_id.ToString(),
+                        sensor = GetDescriptionFromValue(setting.sensor_type_id),
+                        priority = setting.priority,
+                        valor = value.ToString() + unitOfMeasurement,
+                        valor_min = setting.min_value.ToString() + unitOfMeasurement,
+                        valor_max = setting.max_value.ToString() + unitOfMeasurement
+                    };
+                    break;
+                case 3:
+                    //Encaixe Template Geolocation
+                    GoogleLocation gl = new GoogleLocation(_configuration);
+                    string currentLocation = gl.GetAddressByCoordinators(lat, lon);
+
+                    return new
+                    {
+                        icon = DecideIconLocation(setting.priority),
+                        codigo = setting.device_id.ToString(),
+                        evento = evento,
+                        lat_ref = setting.lat_origin.ToString(),
+                        long_ref = setting.long_origin.ToString(),
+                        lat_conf = lat.ToString(),
+                        long_conf = lon.ToString(),
+                        current_location = currentLocation
+                    };
                     break;
                 case 6:
                 case 7:
-                    sMessage = "Valor Identificado: " + gb.TrataBool(Convert.ToBoolean(value))
-                        + "\n" + "Valor de Referência: " + gb.TrataBool(setting.b_value);
+                    //Encaixe Template Bool
+                    return null;
                     break;
                 case 17:
-                    sMessage = "Tamper: " + gb.TrataTamper(Convert.ToInt32(value))
-                        + "\n" + "Valor de Referência: " + gb.TrataTamper(Convert.ToInt32(setting.min_value));
-                    break;
+                    //sMessage = "Tamper: " + gb.TrataTamper(Convert.ToInt32(value))
+                    //    + "\n" + "Valor de Referência: " + gb.TrataTamper(Convert.ToInt32(setting.min_value));
+                    return null;
                 default:
-                    return "";
+                    return null;
             }
-
-            return sMessage;
         }
 
-        public bool CheckMathComparationDouble(int comparationID, double minValue, double maxValue, double monitoringValue)
+        public string DecideIcon(string priority)
         {
+            if (priority.ToUpper().Equals("URGENTE"))
+            {
+                return "🔥";
+            }
+            else if (priority.ToUpper().Equals("ATENÇÂO"))
+            {
+                return "⚠️";
+            }
+            else if (priority.ToUpper().Equals("RETORNO AO PADRÃO"))
+            {
+                return "✅";
+            }
+            else
+            {
+                return "";
+            }
+        }
+
+        public string DecideIconLocation(string priority)
+        {
+            if (priority.ToUpper().Equals("GET IN"))
+            {
+                return "⬇️📍";
+            }
+            else if (priority.ToUpper().Equals("GET OUT"))
+            {
+                return "⬆️📍";
+            }
+            else if (priority.ToUpper().Equals("RETORNO AO PADRÃO"))
+            {
+                return "✅";
+            }
+            else if (priority.ToUpper().Equals("EM MOVIMENTAÇÃO"))
+            {
+                return "...";
+            }
+            else
+            {
+                return "";
+            }
+        }
+
+        public bool CheckMathComparationDouble(int comparationID, double minValue, double maxValue, double? monitoringValue)
+        {
+
             switch (comparationID)
             {
                 case 1: // Equal to
@@ -246,7 +427,29 @@ namespace SensorizMonitoring.Business
                 case 5: // Between
                     return monitoringValue >= minValue && monitoringValue <= maxValue;
                 case 6: // Outside
-                    return monitoringValue < minValue && monitoringValue > maxValue;
+                    return monitoringValue < minValue || monitoringValue > maxValue;
+                default:
+                    return false;
+            }
+        }
+
+        public bool CheckMathRecoveryDouble(int comparationID, double minValue, double maxValue, double? monitoringValue)
+        {
+
+            switch (comparationID)
+            {
+                case 1: // Equal to
+                    return minValue != monitoringValue && maxValue != monitoringValue;
+                case 2: // Not equal to
+                    return minValue == monitoringValue || maxValue == monitoringValue;
+                case 3: // Greater than
+                    return monitoringValue <= maxValue;
+                case 4: // Less than
+                    return monitoringValue >= minValue;
+                case 5: // Between
+                    return monitoringValue < minValue || monitoringValue > maxValue;
+                case 6: // Outside
+                    return monitoringValue >= minValue && monitoringValue <= maxValue;
                 default:
                     return false;
             }
@@ -273,7 +476,55 @@ namespace SensorizMonitoring.Business
             }
         }
 
-        public bool CheckMathComparation_Directions_GetInGetOut(int comparationID, double latDevice, double longDevice, double latSettings, double longSettings)
+        public bool CheckMathComparation_Directions_GetInGetOut(int comparationID, double latDevice, double longDevice, double latSettings, double longSettings, int? radius, ref string evento)
+        {
+            double latDevicePrecision = gb.FormatValuePrecision(latDevice);
+            double longDevicePrecision = gb.FormatValuePrecision(longDevice);
+            double latSettingsPrecision = gb.FormatValuePrecision(latSettings);
+            double longSettingsPrecision = gb.FormatValuePrecision(longSettings);
+            double radiusPrecision = gb.FormatValuePrecision(radius ?? 0);
+
+            double distance = gb.CalculateDistance(latDevicePrecision, longDevicePrecision, latSettingsPrecision, longSettingsPrecision);
+
+            switch (comparationID)
+            {
+                case 1: // Get In To
+                    evento = "ENTRADA";
+                    return distance <= radius;
+                case 2: // Out To
+                    evento = "SAIDA";
+                    return distance > radius;
+                default:
+                    return false;
+            }
+        }
+
+
+
+        public bool CheckMathComparation_Directions_GetInGetOut_Recovery(int comparationID, double latDevice, double longDevice, double latSettings, double longSettings, int? radius, ref string evento)
+        {
+            double latDevicePrecision = gb.FormatValuePrecision(latDevice);
+            double longDevicePrecision = gb.FormatValuePrecision(longDevice);
+            double latSettingsPrecision = gb.FormatValuePrecision(latSettings);
+            double longSettingsPrecision = gb.FormatValuePrecision(longSettings);
+            double radiusPrecision = gb.FormatValuePrecision(radius ?? 0);
+
+            double distance = gb.CalculateDistance(latDevicePrecision, longDevicePrecision, latSettingsPrecision, longSettingsPrecision);
+
+            switch (comparationID)
+            {
+                case 1: // Get In To
+                    evento = "SAIDA";
+                    return distance >= radius;
+                case 2: // Out To
+                    evento = "ENTRADA";
+                    return distance < radius;
+                default:
+                    return false;
+            }
+        }
+
+        public bool CheckMathComparation_Router(int comparationID, double latDevice, double longDevice, double latSettings, double longSettings)
         {
             switch (comparationID)
             {
@@ -286,7 +537,7 @@ namespace SensorizMonitoring.Business
             }
         }
 
-        private bool SendNotification(NotificationSettings ns, NotificationOwner owner, string sMessage, MonitoringModel monit)
+        private bool SendNotification(NotificationSettings ns, NotificationOwner owner, dynamic fields, MonitoringModel monit, string sTemplateID)
         {
             try
             {
@@ -300,17 +551,19 @@ namespace SensorizMonitoring.Business
                         // Send email notification
                         break;
                     case (int)NotificationType.Sms:
-                        sr = zv.SendSms(owner.phone_number, sMessage);
+                        //sr = zv.SendSms(owner.phone_number, template);
                         break;
                     case (int)NotificationType.WhatsApp:
                         // Send WhatsApp notification
-                        sr = zv.SendWhatsApp(owner.phone_number, sMessage);
+                        sr = zv.SendWhatsApp(owner.phone_number, fields, sTemplateID);
                         break;
                 }
 
                 if (sr.Success)
                 {
-                    return InsertNotificationLog(ns, owner, sMessage, monit.deviceId.ToString());
+                    var json = JsonConvert.SerializeObject(sr);
+
+                    return InsertNotificationLog(ns, owner, json.ToString(), monit.deviceId.ToString());
                 }
                 return false;
             }
@@ -320,41 +573,83 @@ namespace SensorizMonitoring.Business
             }
         }
 
-        public string TrataMensagem(NotificationOwner owner, string Sensor, string sMessage)
+        public List<NotificationControl> GetNotificationControl(int deviceID, int notificationID)
         {
             try
             {
-                string sFullMessage = string.Empty;
-                switch (owner.notification_type_id)
-                {
-                    case (int)NotificationType.Email:
-                        // Send email notification
-                        break;
-                    case (int)NotificationType.Sms:
-                        sFullMessage = ":::Alerta Sensoriz:::\n";
-                        sFullMessage += "Sensor Configurado e Identificado: " + Sensor + "\n";
-                        sFullMessage += "---------------\n";
-                        sFullMessage += sMessage;
-                        break;
-                    case (int)NotificationType.WhatsApp:
-                        sFullMessage = ":::Alerta Sensoriz:::\n";
-                        sFullMessage += "Sensor Configurado e Identificado: " + Sensor + "\n";
-                        sFullMessage += "---------------\n";
-                        sFullMessage += sMessage;
-                        break;
-                }
-                return sFullMessage;
+                if (deviceID == 0) throw new ArgumentNullException(nameof(deviceID));
+
+                return _context.NotificationControl
+                  .Where(d => d.device_id == deviceID && d.notification_id == notificationID)
+                  .AsNoTracking()
+                  .ToList();
+
+                return null;
             }
             catch (Exception ex)
             {
-                return "";
+                return null;
             }
         }
 
+
+        public bool ExistsNotificationControl(NotificationSettings ns)
+        {
+            return _context.NotificationControl
+                .Any(nc => nc.device_id == ns.device_id && nc.notification_id == ns.id);
+        }
+
+
+        public bool InsertNotificationControl(NotificationSettings ns)
+        {
+            try
+            {
+                if (!ExistsNotificationControl(ns))
+                {
+                    var insertNotifControl = new NotificationControl();
+
+                    insertNotifControl.device_id = ns.device_id;
+                    insertNotifControl.notification_id = ns.id;
+
+                    _context.Add(insertNotifControl);
+                    _context.SaveChanges();
+                    //_context.Dispose();
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return false;
+            }
+        }
+        public bool DeleteNotificationControl(long device_id, int notification_id, bool isRecovery)
+        {
+            try
+            {
+                if (isRecovery)
+                {
+                    var notifControl = _context.NotificationControl.FirstOrDefault(nc => nc.device_id == device_id && nc.notification_id == notification_id);
+                    if (notifControl != null)
+                    {
+                        _context.NotificationControl.Remove(notifControl);
+                        _context.SaveChanges();
+                        return true;
+                    }
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
         public bool InsertNotificationLog(NotificationSettings st,
-                                         NotificationOwner on,
-                                         string sMessage,
-                                         string sDeviceDescription)
+                                             NotificationOwner on,
+                                             string sMessage,
+                                             string sDeviceDescription)
         {
 
 

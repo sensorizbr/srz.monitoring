@@ -1,10 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SensorizMonitoring.Business;
 using SensorizMonitoring.Data.Context;
 using SensorizMonitoring.Data.Models;
 using SensorizMonitoring.Models;
+using SensorizMonitoring.Utils;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 using ZenviaApi;
 
 namespace SensorizMonitoring.Controllers
@@ -15,13 +20,11 @@ namespace SensorizMonitoring.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly AppDbContext _context;
-        private readonly ILogger _logger;
 
-        public MonitoringController(IConfiguration configuration, AppDbContext context, ILogger logger)
+        public MonitoringController(IConfiguration configuration, AppDbContext context)
         {
             _configuration = configuration;
             _context = context;
-            _logger = logger;
         }
 
         /// <summary>
@@ -29,19 +32,23 @@ namespace SensorizMonitoring.Controllers
         /// </summary>
         
         [HttpPost]
-        public async Task<IActionResult> InsertMonitoring([FromBody] MonitoringModel mnt)
+        //public async Task<IActionResult> InsertMonitoring([FromBody] MonitoringModel mnt)
+        public IActionResult InsertMonitoring([FromBody] dynamic json)
         {
             if (!ModelState.IsValid)
             {
-                _logger.LogInformation("InsertMonitoring - Bad Request");
                 return BadRequest(ModelState);
             }
-            
+
             try
             {
-                bnDecisionNotificationMonitoring dec = new bnDecisionNotificationMonitoring(_configuration, _context);
+                string jsonString = json.ToString();
+                MonitoringModel mnt = JsonConvert.DeserializeObject<MonitoringModel>(jsonString);
+                //MonitoringModel mnt = JsonConvert.DeserializeObject<MonitoringModel>(json);
 
-                _logger.LogInformation("InsertMonitoring - Let Check Notifications...");
+                bnDecisionNotificationMonitoring dec = new bnDecisionNotificationMonitoring(_configuration, _context);
+                Globals gb = new Globals();
+
                 dec.sendNotification(mnt);
 
                 var insertMonitoring = new Monitoring();
@@ -49,36 +56,46 @@ namespace SensorizMonitoring.Controllers
                 insertMonitoring.device_id = mnt.deviceId;
                 insertMonitoring.temperature = mnt.status.temperature;
                 insertMonitoring.atmospheric_pressure = mnt.status.atmosphericPressure;
-                insertMonitoring.lat = mnt.pos.lat;
-                insertMonitoring.lon = mnt.pos.lon;
-                insertMonitoring.cep = mnt.pos.cep;
+                insertMonitoring.lat = mnt.pos?.lat;
+                insertMonitoring.lon = mnt.pos?.lon;
+                insertMonitoring.cep = mnt.pos?.cep;
                 insertMonitoring.external_power = mnt.status.externalPower;
                 insertMonitoring.charging = mnt.status.charging;
                 insertMonitoring.battery_voltage = mnt.status.batteryVoltage;
                 insertMonitoring.light_level = mnt.status.lightLevel;
-                insertMonitoring.orientation_x = mnt.status.orientation.x;
-                insertMonitoring.orientation_y = mnt.status.orientation.y;
-                insertMonitoring.orientation_z = mnt.status.orientation.z;
-                insertMonitoring.vibration_x = mnt.status.vibration.x;
-                insertMonitoring.vibration_y = mnt.status.vibration.y;
-                insertMonitoring.vibration_z = mnt.status.vibration.z;
+                insertMonitoring.orientation_x = mnt.status.orientation?.x;
+                insertMonitoring.orientation_y = mnt.status.orientation?.y;
+                insertMonitoring.orientation_z = mnt.status.orientation?.z;
+                insertMonitoring.vibration_x = mnt.status.vibration?.x;
+                insertMonitoring.vibration_y = mnt.status.vibration?.y;
+                insertMonitoring.vibration_z = mnt.status.vibration?.z;
                 insertMonitoring.com_signal = mnt.status.signal;
                 insertMonitoring.tamper = mnt.status.tamper;
                 insertMonitoring.movement = mnt.status.movement;
                 insertMonitoring.created_at = DateTime.Now;
-
+                insertMonitoring.report_date = gb.ToBRDateTime(mnt.rxTime);
 
                 _context.Add(insertMonitoring);
                 _context.SaveChangesAsync();
                 //_context.Dispose();
 
-                _logger.LogInformation("InsertMonitoring -Monitoring Inserted!");
                 return Ok(insertMonitoring);
             }
-            catch (DbUpdateConcurrencyException ex)
+            catch (DbUpdateException ex)
             {
                 return StatusCode(500, "Error insert monitoring: " + ex.Message);
             }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error insert monitoring: " + ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> CalculaDistancia(double lat1, double lon1, double lat2, double lon2)
+        {
+            Globals gb = new Globals();
+            return Ok(gb.CalculateDistance(lat1, lon1, lat2, lon2));
         }
 
         [HttpGet]
@@ -94,6 +111,13 @@ namespace SensorizMonitoring.Controllers
             var smsSender = new bnZenvia(_configuration);
             smsSender.SendSms(sPhoneNumber, "SENSORIZ TEST");
             return Ok("Enviado com sucesso!");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> GetAddressFromLatLong(double lat, double lon)
+        {
+            GoogleLocation gl = new GoogleLocation(_configuration);
+            return Ok(gl.GetAddressByCoordinators(lat, lon));
         }
     }
 }

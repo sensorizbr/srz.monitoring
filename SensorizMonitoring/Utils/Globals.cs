@@ -55,7 +55,8 @@ namespace SensorizMonitoring
             // Padrão de expressão regular para verificar a estrutura do email
             return (page - 1) * limit;
         }
-        public double ToDouble(string value) {
+        public double ToDouble(string value)
+        {
 
             value = value.Replace(".", ",");
             CultureInfo culture = new CultureInfo("pt-BR");
@@ -109,6 +110,47 @@ namespace SensorizMonitoring
             {
                 return 0;
             }
+        }
+
+        public string DotHealth(double dValue)
+        {
+            return dValue.ToString().Replace(",", ".");
+        }
+
+        public DateTime ToBRDateTime(long valueTime)
+        {
+            DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(valueTime);
+            TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+            DateTime brazilDateTime = TimeZoneInfo.ConvertTimeFromUtc(dateTime, brazilTimeZone);
+
+            return brazilDateTime;
+        }
+
+        public double FormatValuePrecision(double vlr)
+        {
+            string formattedLatitude = vlr.ToString("F6"); // F6 significa 6 casas decimais
+            return double.Parse(formattedLatitude);
+        }
+
+        public double CalculateDistance(double lat1, double long1, double lat2, double long2)
+        {
+            const double R = 6371; // Raio da Terra em quilômetros
+            double dLat = ToRadians(lat2 - lat1);
+            double dLong = ToRadians(long2 - long1);
+            lat1 = ToRadians(lat1);
+            lat2 = ToRadians(lat2);
+
+            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                        Math.Sin(dLong / 2) * Math.Sin(dLong / 2) * Math.Cos(lat1) * Math.Cos(lat2);
+            double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+            double distance = R * c * 1000; // Convertendo quilômetros para metros
+
+            return distance;
+        }
+
+        private double ToRadians(double angle)
+        {
+            return (Math.PI / 180) * angle;
         }
     }
 

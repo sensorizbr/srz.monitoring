@@ -74,7 +74,7 @@
             Lista todos os modelos de dispositivos na base de dados da Sensoriz
             </summary>
         </member>
-        <member name="M:SensorizMonitoring.Controllers.MonitoringController.InsertMonitoring(SensorizMonitoring.Models.MonitoringModel)">
+        <member name="M:SensorizMonitoring.Controllers.MonitoringController.InsertMonitoring(System.Object)">
             <summary>
             Recebe as notificações dos dispositivos da LocoAware
             </summary>
