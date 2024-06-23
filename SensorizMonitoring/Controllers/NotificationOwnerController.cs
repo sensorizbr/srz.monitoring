@@ -1,14 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Mysqlx.Crud;
-using Newtonsoft.Json;
-using SensorizMonitoring.Business;
 using SensorizMonitoring.Data.Context;
 using SensorizMonitoring.Data.Models;
-using SensorizMonitoring.Models;
 using SensorizMonitoring.Models.NotificationOwner;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace SensorizMonitoring.Controllers
 {

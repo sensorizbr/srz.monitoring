@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SensorizMonitoring.Business;
 
@@ -18,6 +19,7 @@ namespace SensorizMonitoring.Controllers
         /// Sincroniza Todos os Modelos de Dispositivos, sincronizãndo diretamente com a API da LocoAware
         /// </summary>
         [HttpPost]
+        [Authorize]
         public IActionResult SincronizeDeviceReferences()
         {
             //MonitoringModel monitoring = JsonConvert.DeserializeObject<MonitoringModel>(value);

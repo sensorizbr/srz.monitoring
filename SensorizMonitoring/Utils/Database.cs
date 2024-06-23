@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using Nancy.Json;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -74,23 +75,42 @@ namespace Database
 
         public dynamic DTToJson(DataTable dataTable)
         {
-            List<ExpandoObject> listaObjetos = new List<ExpandoObject>();
-
-            foreach (DataRow row in dataTable.Rows)
+            if (dataTable != null)
             {
-                dynamic objetoDinamico = new ExpandoObject();
-                var objetoDinamicoDict = (IDictionary<string, object>)objetoDinamico;
+                List<ExpandoObject> listaObjetos = new List<ExpandoObject>();
 
-                foreach (DataColumn coluna in dataTable.Columns)
+                foreach (DataRow row in dataTable.Rows)
                 {
-                    objetoDinamicoDict[coluna.ColumnName] = row[coluna];
+                    dynamic objetoDinamico = new ExpandoObject();
+                    var objetoDinamicoDict = (IDictionary<string, object>)objetoDinamico;
+
+                    foreach (DataColumn coluna in dataTable.Columns)
+                    {
+                        objetoDinamicoDict[coluna.ColumnName] = row[coluna];
+                    }
+
+                    listaObjetos.Add(objetoDinamico);
                 }
 
-                listaObjetos.Add(objetoDinamico);
+                return listaObjetos;
             }
-
-            return listaObjetos;
+            else
+            {
+                return null;
+            }
         }
+
+
+        public dynamic DRowToJson(DataRow dataRow)
+        {
+            var dictionary = new Dictionary<string, object>();
+            foreach (DataColumn column in dataRow.Table.Columns)
+            {
+                dictionary[column.ColumnName] = dataRow[column];
+            }
+            return dictionary;
+        }
+
 
         public bool TrataRetorno(DataTable dt)
         {

@@ -1,15 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using SensorizMonitoring.Business;
 using SensorizMonitoring.Data.Context;
 using SensorizMonitoring.Data.Models;
 using SensorizMonitoring.Models;
 using SensorizMonitoring.Utils;
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json;
 using ZenviaApi;
 
 namespace SensorizMonitoring.Controllers
@@ -20,11 +16,13 @@ namespace SensorizMonitoring.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly AppDbContext _context;
+        private readonly ILogger _logger;
 
-        public MonitoringController(IConfiguration configuration, AppDbContext context)
+        public MonitoringController(IConfiguration configuration, AppDbContext context, ILogger<MonitoringController> logger)
         {
             _configuration = configuration;
             _context = context;
+            _logger = logger;
         }
 
         /// <summary>
@@ -46,10 +44,10 @@ namespace SensorizMonitoring.Controllers
                 MonitoringModel mnt = JsonConvert.DeserializeObject<MonitoringModel>(jsonString);
                 //MonitoringModel mnt = JsonConvert.DeserializeObject<MonitoringModel>(json);
 
-                bnDecisionNotificationMonitoring dec = new bnDecisionNotificationMonitoring(_configuration, _context);
+                bnDecisionNotificationMonitoring dec = new bnDecisionNotificationMonitoring(_configuration, _context, _logger);
                 Globals gb = new Globals();
 
-                dec.sendNotification(mnt);
+                dec.GetNotificationSettings(mnt);
 
                 var insertMonitoring = new Monitoring();
 
@@ -72,11 +70,11 @@ namespace SensorizMonitoring.Controllers
                 insertMonitoring.com_signal = mnt.status.signal;
                 insertMonitoring.tamper = mnt.status.tamper;
                 insertMonitoring.movement = mnt.status.movement;
-                insertMonitoring.created_at = DateTime.Now;
+                insertMonitoring.created_at = gb.ToBRDateTimeDT(DateTime.Now);
                 insertMonitoring.report_date = gb.ToBRDateTime(mnt.rxTime);
 
                 _context.Add(insertMonitoring);
-                _context.SaveChangesAsync();
+                _context.SaveChanges();
                 //_context.Dispose();
 
                 return Ok(insertMonitoring);
@@ -108,7 +106,7 @@ namespace SensorizMonitoring.Controllers
         [HttpPost]
         public async Task<ActionResult> ZenviaTest(string sPhoneNumber)
         {
-            var smsSender = new bnZenvia(_configuration);
+            var smsSender = new bnZenvia(_configuration, _logger);
             smsSender.SendSms(sPhoneNumber, "SENSORIZ TEST");
             return Ok("Enviado com sucesso!");
         }

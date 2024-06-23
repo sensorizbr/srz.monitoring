@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using IdentityModel.Client;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SensorizMonitoring.Data.Models;
 using SensorizMonitoring.Models;
@@ -14,11 +15,13 @@ namespace ZenviaApi
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
+        private readonly ILogger _logger;
 
-        public bnZenvia(IConfiguration configuration)
+        public bnZenvia(IConfiguration configuration, ILogger logger)
         {
             _httpClient = new HttpClient();
             _configuration = configuration;
+            _logger = logger;
         }
 
         public SendResponse SendSms(string to, string message)
@@ -59,10 +62,16 @@ namespace ZenviaApi
                 var responseBody = response.Content.ReadAsStringAsync().Result;
                 var sendResponse = JsonConvert.DeserializeObject<SendMessageResponse>(responseBody);
                 result = new SendResponse { StatusCode = response.StatusCode, Success = true, Response = sendResponse };
+
+                _logger.LogInformation("Enviou Notificacao");
+                _logger.LogInformation(responseBody);
             }
             else
             {
                 result = new SendResponse { StatusCode = response.StatusCode, Success = false, ErrorMessage = $"Error sending SMS message: {response.ReasonPhrase}" };
+
+                _logger.LogCritical("Não Enviou Notificacao");
+                _logger.LogCritical(result.ToString());
             }
 
             return result;
@@ -106,10 +115,16 @@ namespace ZenviaApi
                 var responseBody = response.Content.ReadAsStringAsync().Result;
                 var sendResponse = JsonConvert.DeserializeObject<SendMessageResponse>(responseBody);
                 result = new SendResponse { StatusCode = response.StatusCode, Success = true, Response = sendResponse };
+
+                _logger.LogInformation("Enviou Notificacao");
+                _logger.LogInformation(responseBody);
             }
             else
             {
                 result = new SendResponse { StatusCode = response.StatusCode, Success = false, ErrorMessage = $"Error sending Whatsapp message: {response.ReasonPhrase}" };
+
+                _logger.LogCritical("Não Enviou Notificacao");
+                _logger.LogCritical(result.ToString());
             }
 
             return result;

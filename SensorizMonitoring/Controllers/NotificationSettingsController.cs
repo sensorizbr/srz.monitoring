@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using SensorizMonitoring.Business;
 using SensorizMonitoring.Data.Context;
 using SensorizMonitoring.Data.Models;
-using SensorizMonitoring.Models;
 using SensorizMonitoring.Models.NotificationsSettings;
 
 namespace SensorizMonitoring.Controllers

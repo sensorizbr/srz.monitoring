@@ -126,6 +126,14 @@ namespace SensorizMonitoring
             return brazilDateTime;
         }
 
+        public DateTime ToBRDateTimeDT(DateTime dt)
+        {
+            TimeZoneInfo brazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+            DateTime brazilDateTime = TimeZoneInfo.ConvertTime(dt, brazilTimeZone);
+
+            return brazilDateTime;
+        }
+
         public double FormatValuePrecision(double vlr)
         {
             string formattedLatitude = vlr.ToString("F6"); // F6 significa 6 casas decimais

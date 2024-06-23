@@ -1,15 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Nancy.Json;
-using Newtonsoft.Json;
 using SensorizMonitoring.Business;
 using SensorizMonitoring.Data.Context;
 using SensorizMonitoring.Data.Models;
 using SensorizMonitoring.Models;
 using SensorizMonitoring.Utils;
-using System.Collections.Generic;
-using System.Text.Json;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using static SensorizMonitoring.Business.bnDevice;
 
 namespace SensorizMonitoring.Controllers

@@ -1,11 +1,13 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using SensorizMonitoring.Data.Context;
 using System.Reflection;
-using OpenTelemetry;
-using OpenTelemetry.Trace;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Metrics;
-using System;
+using System.Text;
 
 namespace SensorizMonitoring
 {
@@ -21,15 +23,6 @@ namespace SensorizMonitoring
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-
-            services.AddOpenTelemetry()
-            .ConfigureResource(resource => resource.AddService("Sensoriz_Monitoring"))
-            .WithMetrics(metrics =>
-              metrics
-                .AddAspNetCoreInstrumentation() // ASP.NET Core related
-                .AddRuntimeInstrumentation() // .NET Runtime metrics like - GC, Memory Pressure, Heap Leaks etc
-                .AddPrometheusExporter() // Prometheus Exporter
-            );
 
             // Configuração do Swagger
             services.AddSwaggerGen(c =>
@@ -58,6 +51,7 @@ namespace SensorizMonitoring
                     .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
             );
 
+            services.AddAuthorization();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -74,11 +68,11 @@ namespace SensorizMonitoring
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseCors("MyPolicy");
             app.UseAuthorization();
 
             app.UseCors("AllowAll");
 
-            app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
             app.UseEndpoints(endpoints =>
             {

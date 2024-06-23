@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SensorizMonitoring.Data.Context;
 using SensorizMonitoring.Data.Models;
@@ -16,6 +17,8 @@ namespace SensorizMonitoring.Business
 
         private readonly IConfiguration _configuration;
         private readonly AppDbContext _context;
+        private readonly ILogger _logger;
+
         Globals gb = new Globals();
 
         public enum NotificationType
@@ -82,31 +85,20 @@ namespace SensorizMonitoring.Business
             Direction = 18
         }
 
-        public bnDecisionNotificationMonitoring(IConfiguration configuration, AppDbContext context)
+        public bnDecisionNotificationMonitoring(IConfiguration configuration, AppDbContext context, ILogger logger)
         {
             _configuration = configuration;
             _context = context;
-        }
-
-
-        public bool sendNotification(MonitoringModel monit)
-        {
-            try
-            {
-                GetNotificationSettings(monit);
-                return true;
-
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+            _logger = logger;
         }
 
         public bool GetNotificationSettings(MonitoringModel monit)
         {
             try
             {
+                _logger.LogInformation("Iniciando telemetria do dispositivo: ");
+                _logger.LogInformation(monit.deviceId.ToString());
+
                 string sMessage = string.Empty;
                 string sSensor = string.Empty;
                 string sTemplateID = string.Empty;
@@ -119,22 +111,30 @@ namespace SensorizMonitoring.Business
                 bnNotificationOwner no = new bnNotificationOwner(_configuration, _context);
                 List<NotificationOwner> lstOwners = no.GetNotificationOwnersForDevice(monit.deviceId);
 
-                if (lstSettings.Count > 0)
+                if (lstSettings != null && lstSettings.Count > 0)
                 {
+                    _logger.LogInformation("Achei configuração...");
                     foreach (var setting in lstSettings)
                     {
                         if (ShouldSendNotification(setting, monit, ref fields, ref sSensor, ref isRecovery, ref sTemplateID))
                         {
+                            _logger.LogInformation("É passível de notificação!");
                             foreach (var owner in lstOwners)
                             {
+                                _logger.LogInformation("Tem owner!");
+                                _logger.LogInformation(owner.phone_number);
+                                _logger.LogInformation(owner.mail);
                                 if (SendNotification(setting, owner, fields, monit, sTemplateID))
                                 {
+                                    _logger.LogInformation("Vamos notificar");
                                     if (isRecovery)
                                     {
+                                        _logger.LogInformation("É recovery");
                                         DeleteNotificationControl(setting.device_id, setting.id, isRecovery);
                                     }
                                     else
                                     {
+                                        _logger.LogInformation("É notificação normal");
                                         InsertNotificationControl(setting);
                                     }
                                 }
@@ -152,6 +152,7 @@ namespace SensorizMonitoring.Business
             }
             catch (Exception ex)
             {
+                _logger.LogCritical(ex.Message.ToString());
                 return false;
             }
         }
@@ -541,7 +542,7 @@ namespace SensorizMonitoring.Business
         {
             try
             {
-                bnZenvia zv = new bnZenvia(_configuration);
+                bnZenvia zv = new bnZenvia(_configuration, _logger);
 
                 SendResponse sr = new SendResponse();
 
@@ -569,6 +570,7 @@ namespace SensorizMonitoring.Business
             }
             catch (Exception ex)
             {
+                _logger.LogCritical(ex.Message.ToString());
                 return false;
             }
         }
@@ -588,6 +590,7 @@ namespace SensorizMonitoring.Business
             }
             catch (Exception ex)
             {
+                _logger.LogCritical(ex.Message.ToString());
                 return null;
             }
         }
@@ -622,6 +625,7 @@ namespace SensorizMonitoring.Business
             }
             catch (DbUpdateConcurrencyException ex)
             {
+                _logger.LogCritical(ex.Message.ToString());
                 return false;
             }
         }
@@ -643,6 +647,7 @@ namespace SensorizMonitoring.Business
             }
             catch (Exception ex)
             {
+                _logger.LogCritical(ex.Message.ToString());
                 return false;
             }
         }
@@ -675,6 +680,7 @@ namespace SensorizMonitoring.Business
             }
             catch (DbUpdateConcurrencyException ex)
             {
+                _logger.LogCritical(ex.Message.ToString());
                 return false;
             }
         }

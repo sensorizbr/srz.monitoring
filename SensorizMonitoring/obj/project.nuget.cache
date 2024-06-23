@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "VTcC7kR06dg=",
+  "dgSpecHash": "Vdc+muHseGY=",
   "success": true,
   "projectFilePath": "C:\\GIT\\srz.monitoring\\SensorizMonitoring\\SensorizMonitoring.csproj",
   "expectedPackageFiles": [
@@ -95,7 +95,6 @@
     "C:\\Users\\rissi\\.nuget\\packages\\pomelo.entityframeworkcore.mysql\\8.0.2\\pomelo.entityframeworkcore.mysql.8.0.2.nupkg.sha512",
     "C:\\Users\\rissi\\.nuget\\packages\\prometheus-net\\8.2.1\\prometheus-net.8.2.1.nupkg.sha512",
     "C:\\Users\\rissi\\.nuget\\packages\\prometheus-net.aspnetcore\\8.2.1\\prometheus-net.aspnetcore.8.2.1.nupkg.sha512",
-    "C:\\Users\\rissi\\.nuget\\packages\\restsharp\\106.6.10\\restsharp.106.6.10.nupkg.sha512",
     "C:\\Users\\rissi\\.nuget\\packages\\runtime.debian.8-x64.runtime.native.system.security.cryptography.openssl\\4.3.0\\runtime.debian.8-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512",
     "C:\\Users\\rissi\\.nuget\\packages\\runtime.fedora.23-x64.runtime.native.system.security.cryptography.openssl\\4.3.0\\runtime.fedora.23-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512",
     "C:\\Users\\rissi\\.nuget\\packages\\runtime.fedora.24-x64.runtime.native.system.security.cryptography.openssl\\4.3.0\\runtime.fedora.24-x64.runtime.native.system.security.cryptography.openssl.4.3.0.nupkg.sha512",
@@ -211,7 +210,6 @@
     "C:\\Users\\rissi\\.nuget\\packages\\system.xml.xmldocument\\4.3.0\\system.xml.xmldocument.4.3.0.nupkg.sha512",
     "C:\\Users\\rissi\\.nuget\\packages\\system.xml.xmlserializer\\4.3.0\\system.xml.xmlserializer.4.3.0.nupkg.sha512",
     "C:\\Users\\rissi\\.nuget\\packages\\timezoneconverter\\6.1.0\\timezoneconverter.6.1.0.nupkg.sha512",
-    "C:\\Users\\rissi\\.nuget\\packages\\twilio.aspnet.common\\8.0.2\\twilio.aspnet.common.8.0.2.nupkg.sha512",
     "C:\\Users\\rissi\\.nuget\\packages\\volo.abp\\8.1.3\\volo.abp.8.1.3.nupkg.sha512",
     "C:\\Users\\rissi\\.nuget\\packages\\volo.abp.aspnetcore\\8.1.3\\volo.abp.aspnetcore.8.1.3.nupkg.sha512",
     "C:\\Users\\rissi\\.nuget\\packages\\volo.abp.auditing\\8.1.3\\volo.abp.auditing.8.1.3.nupkg.sha512",
@@ -241,8 +239,6 @@
     "C:\\Users\\rissi\\.nuget\\packages\\volo.abp.validation\\8.1.3\\volo.abp.validation.8.1.3.nupkg.sha512",
     "C:\\Users\\rissi\\.nuget\\packages\\volo.abp.validation.abstractions\\8.1.3\\volo.abp.validation.abstractions.8.1.3.nupkg.sha512",
     "C:\\Users\\rissi\\.nuget\\packages\\volo.abp.virtualfilesystem\\8.1.3\\volo.abp.virtualfilesystem.8.1.3.nupkg.sha512",
-    "C:\\Users\\rissi\\.nuget\\packages\\zenvia.core\\1.0.0\\zenvia.core.1.0.0.nupkg.sha512",
-    "C:\\Users\\rissi\\.nuget\\packages\\zenvia.sms\\1.0.3\\zenvia.sms.1.0.3.nupkg.sha512",
     "C:\\Users\\rissi\\.nuget\\packages\\zstdsharp.port\\0.7.1\\zstdsharp.port.0.7.1.nupkg.sha512"
   ],
   "logs": []

@@ -1,19 +1,29 @@
-# Use a imagem base do .NET
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+# Dockerfile
+# Define a imagem base (SDK do .NET Core 8)
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+
+USER app
 WORKDIR /app
 
-# Copie o projeto e restaure as dependências
-COPY ./App/*.csproj ./
-RUN dotnet restore
+EXPOSE 8080
+EXPOSE 8081
 
-# Copie o código-fonte e compile o aplicativo
-COPY ./App ./
-RUN dotnet publish -c Release -o out
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Debug
+WORKDIR /src
 
-# Crie a imagem final
-FROM mcr.microsoft.com/dotnet/runtime:8.0
+COPY ["SensorizMonitoring.csproj", "SensorizMonitoring/"]
+RUN dotnet restore "./SensorizMonitoring/SensorizMonitoring.csproj"
+
+COPY . .
+WORKDIR "/src/SensorizMonitoring"
+RUN dotnet build "./SensorizMonitoring.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Debug
+RUN dotnet publish "./SensorizMonitoring.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
 WORKDIR /app
-COPY --from=build-env /app/out ./
-
-# Execute o aplicativo
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "SensorizMonitoring.dll"]

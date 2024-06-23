@@ -8,6 +8,7 @@ using OpenTelemetry.Exporter;
 using System.Diagnostics;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Logs;
+using System.Net;
 
 namespace SensorizMonitoring
 {
@@ -24,7 +25,6 @@ namespace SensorizMonitoring
                 {
                     webBuilder.ConfigureServices(services =>
                     {
-
                     });
                     webBuilder.UseStartup<Startup>();
                 });
