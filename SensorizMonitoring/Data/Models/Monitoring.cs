@@ -7,6 +7,7 @@ namespace SensorizMonitoring.Data.Models
     public class Monitoring
     {
         public int id { get; set; }
+        public long seq { get; set; }
         public long device_id { get; set; }
         public double temperature { get; set; }
         public double atmospheric_pressure { get; set; }

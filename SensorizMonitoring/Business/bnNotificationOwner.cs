@@ -15,14 +15,14 @@ namespace SensorizMonitoring.Business
             _context = context;
         }
 
-        public List<NotificationOwner> GetNotificationOwnersForDevice(long deviceId)
+        public List<NotificationOwner> GetNotificationOwnersForDevice(long deviceId, int notificationSettingId)
         {
             try
             {
                 if (deviceId == 0) throw new ArgumentNullException(nameof(deviceId));
 
                 return _context.NotificationOwner
-                  .Where(d => d.device_id == deviceId && d.enabled == 1)
+                  .Where(d => d.device_id == deviceId && d.enabled == 1 && d.notification_setting_id == notificationSettingId)
                   .AsNoTracking()
                   .ToList();
             }

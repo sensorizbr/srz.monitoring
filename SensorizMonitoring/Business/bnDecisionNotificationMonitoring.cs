@@ -4,7 +4,6 @@ using Newtonsoft.Json;
 using SensorizMonitoring.Data.Context;
 using SensorizMonitoring.Data.Models;
 using SensorizMonitoring.Models;
-using SensorizMonitoring.Templates;
 using SensorizMonitoring.Utils;
 using System.Reflection;
 using ZenviaApi;
@@ -82,7 +81,10 @@ namespace SensorizMonitoring.Business
             Movement = 17,
 
             [Description("Direção")]
-            Direction = 18
+            Direction = 18,
+
+            [Description("Impacto")]
+            Impact = 19
         }
 
         public bnDecisionNotificationMonitoring(IConfiguration configuration, AppDbContext context, ILogger logger)
@@ -99,47 +101,61 @@ namespace SensorizMonitoring.Business
                 _logger.LogInformation("Iniciando telemetria do dispositivo: ");
                 _logger.LogInformation(monit.deviceId.ToString());
 
-                string sMessage = string.Empty;
-                string sSensor = string.Empty;
-                string sTemplateID = string.Empty;
-                bool isRecovery = false;
-                dynamic fields = false;
-
                 bnNotificationSettings ns = new bnNotificationSettings(_configuration, _context);
                 List<NotificationSettings> lstSettings = ns.GetNotificationSettingsForDevice(monit.deviceId);
 
-                bnNotificationOwner no = new bnNotificationOwner(_configuration, _context);
-                List<NotificationOwner> lstOwners = no.GetNotificationOwnersForDevice(monit.deviceId);
+                long seq = long.Parse(DateTime.Now.ToString("yyyyMMddHHmmss"));
 
                 if (lstSettings != null && lstSettings.Count > 0)
                 {
+                    string sMessage = string.Empty;
+                    string sSensor = string.Empty;
+                    string sTemplateID = string.Empty;
+                    bool isRecovery = false;
+                    dynamic fields = false;
+                    bool doTelemetry = false;
+
                     _logger.LogInformation("Achei configuração...");
                     foreach (var setting in lstSettings)
                     {
                         if (ShouldSendNotification(setting, monit, ref fields, ref sSensor, ref isRecovery, ref sTemplateID))
                         {
+                            bnNotificationOwner no = new bnNotificationOwner(_configuration, _context);
+                            List<NotificationOwner> lstOwners = no.GetNotificationOwnersForDevice(monit.deviceId, setting.id);
+
                             _logger.LogInformation("É passível de notificação!");
-                            foreach (var owner in lstOwners)
-                            {
-                                _logger.LogInformation("Tem owner!");
-                                _logger.LogInformation(owner.phone_number);
-                                _logger.LogInformation(owner.mail);
-                                if (SendNotification(setting, owner, fields, monit, sTemplateID))
+                            if (lstOwners != null && lstOwners.Count > 0)
+                            { 
+                                foreach (var owner in lstOwners)
                                 {
-                                    _logger.LogInformation("Vamos notificar");
-                                    if (isRecovery)
+                                    _logger.LogInformation("Tem owner!");
+                                    _logger.LogInformation(owner.phone_number);
+                                    _logger.LogInformation(owner.mail);
+                                    if (SendNotification(setting, owner, fields, monit, sTemplateID, seq))
                                     {
-                                        _logger.LogInformation("É recovery");
-                                        DeleteNotificationControl(setting.device_id, setting.id, isRecovery);
-                                    }
-                                    else
-                                    {
-                                        _logger.LogInformation("É notificação normal");
-                                        InsertNotificationControl(setting);
+                                        doTelemetry = true;
+
+                                        if (isRecovery)
+                                        {
+                                            _logger.LogInformation("É recovery");
+                                            DeleteNotificationControl(setting.device_id, setting.id, isRecovery);
+                                        }
+                                        else
+                                        {
+                                            _logger.LogInformation("É notificação normal");
+                                            InsertNotificationControl(setting);
+                                        }
                                     }
                                 }
                             }
                         }
+                    }
+
+                    if (doTelemetry)
+                    {
+                        _logger.LogInformation("Notificamos... Vamos inserir no monitoramento.");
+                        bnMonitoring monitoring = new bnMonitoring(_configuration, _context, _logger);
+                        monitoring.InsertMonitoring(monit, seq); //Insertindo o monitoramento apenas se notificar
                     }
                 }
                 else
@@ -538,7 +554,7 @@ namespace SensorizMonitoring.Business
             }
         }
 
-        private bool SendNotification(NotificationSettings ns, NotificationOwner owner, dynamic fields, MonitoringModel monit, string sTemplateID)
+        private bool SendNotification(NotificationSettings ns, NotificationOwner owner, dynamic fields, MonitoringModel monit, string sTemplateID, long seq)
         {
             try
             {
@@ -564,7 +580,7 @@ namespace SensorizMonitoring.Business
                 {
                     var json = JsonConvert.SerializeObject(sr);
 
-                    return InsertNotificationLog(ns, owner, json.ToString(), monit.deviceId.ToString());
+                    return InsertNotificationLog(ns, owner, seq, json.ToString(), monit.deviceId.ToString());
                 }
                 return false;
             }
@@ -619,7 +635,8 @@ namespace SensorizMonitoring.Business
                     //_context.Dispose();
                     return true;
                 }
-                else {
+                else
+                {
                     return false;
                 }
             }
@@ -653,6 +670,7 @@ namespace SensorizMonitoring.Business
         }
         public bool InsertNotificationLog(NotificationSettings st,
                                              NotificationOwner on,
+                                             long seq,
                                              string sMessage,
                                              string sDeviceDescription)
         {
@@ -663,6 +681,7 @@ namespace SensorizMonitoring.Business
                 var insertNotificationLog = new NotificationLog();
 
                 insertNotificationLog.device_id = st.device_id;
+                insertNotificationLog.seq = seq;
                 insertNotificationLog.description = sDeviceDescription;
                 insertNotificationLog.sensor_type_id = st.sensor_type_id;
                 insertNotificationLog.comparation_id = st.comparation_id;

@@ -6,7 +6,6 @@ using SensorizMonitoring.Data.Context;
 using SensorizMonitoring.Data.Models;
 using SensorizMonitoring.Models;
 using SensorizMonitoring.Utils;
-using ZenviaApi;
 
 namespace SensorizMonitoring.Controllers
 {
@@ -28,12 +27,12 @@ namespace SensorizMonitoring.Controllers
         /// <summary>
         /// Recebe as notificações dos dispositivos da LocoAware
         /// </summary>
-        
+
         [HttpPost]
         //public async Task<IActionResult> InsertMonitoring([FromBody] MonitoringModel mnt)
         public IActionResult InsertMonitoring([FromBody] dynamic json)
         {
-            if (!ModelState.IsValid)
+             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
@@ -42,42 +41,13 @@ namespace SensorizMonitoring.Controllers
             {
                 string jsonString = json.ToString();
                 MonitoringModel mnt = JsonConvert.DeserializeObject<MonitoringModel>(jsonString);
-                //MonitoringModel mnt = JsonConvert.DeserializeObject<MonitoringModel>(json);
 
                 bnDecisionNotificationMonitoring dec = new bnDecisionNotificationMonitoring(_configuration, _context, _logger);
                 Globals gb = new Globals();
 
                 dec.GetNotificationSettings(mnt);
 
-                var insertMonitoring = new Monitoring();
-
-                insertMonitoring.device_id = mnt.deviceId;
-                insertMonitoring.temperature = mnt.status.temperature;
-                insertMonitoring.atmospheric_pressure = mnt.status.atmosphericPressure;
-                insertMonitoring.lat = mnt.pos?.lat;
-                insertMonitoring.lon = mnt.pos?.lon;
-                insertMonitoring.cep = mnt.pos?.cep;
-                insertMonitoring.external_power = mnt.status.externalPower;
-                insertMonitoring.charging = mnt.status.charging;
-                insertMonitoring.battery_voltage = mnt.status.batteryVoltage;
-                insertMonitoring.light_level = mnt.status.lightLevel;
-                insertMonitoring.orientation_x = mnt.status.orientation?.x;
-                insertMonitoring.orientation_y = mnt.status.orientation?.y;
-                insertMonitoring.orientation_z = mnt.status.orientation?.z;
-                insertMonitoring.vibration_x = mnt.status.vibration?.x;
-                insertMonitoring.vibration_y = mnt.status.vibration?.y;
-                insertMonitoring.vibration_z = mnt.status.vibration?.z;
-                insertMonitoring.com_signal = mnt.status.signal;
-                insertMonitoring.tamper = mnt.status.tamper;
-                insertMonitoring.movement = mnt.status.movement;
-                insertMonitoring.created_at = gb.ToBRDateTimeDT(DateTime.Now);
-                insertMonitoring.report_date = gb.ToBRDateTime(mnt.rxTime);
-
-                _context.Add(insertMonitoring);
-                _context.SaveChanges();
-                //_context.Dispose();
-
-                return Ok(insertMonitoring);
+                return Ok(mnt);
             }
             catch (DbUpdateException ex)
             {
@@ -103,13 +73,13 @@ namespace SensorizMonitoring.Controllers
             return Ok(monitorings);
         }
 
-        [HttpPost]
-        public async Task<ActionResult> ZenviaTest(string sPhoneNumber)
-        {
-            var smsSender = new bnZenvia(_configuration, _logger);
-            smsSender.SendSms(sPhoneNumber, "SENSORIZ TEST");
-            return Ok("Enviado com sucesso!");
-        }
+        //[HttpPost]
+        //public async Task<ActionResult> ZenviaTest(string sPhoneNumber)
+        //{
+        //    var smsSender = new bnZenvia(_configuration, _logger);
+        //    smsSender.SendSms(sPhoneNumber, "SENSORIZ TEST");
+        //    return Ok("Enviado com sucesso!");
+        //}
 
         [HttpPost]
         public async Task<ActionResult> GetAddressFromLatLong(double lat, double lon)

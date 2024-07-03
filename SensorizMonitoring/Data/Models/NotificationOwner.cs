@@ -7,6 +7,7 @@ namespace SensorizMonitoring.Data.Models
     {
         public int id { get; set; }
         public string description { get; set; }
+        public int notification_setting_id { get; set; }
         public long device_id { get; set; }
         public int notification_type_id { get; set; }
         public string phone_number { get; set; }
