@@ -8,5 +8,6 @@
         public long deviceId { get; set; }
         public StatusModel? status { get; set; }
         public StateFlagsModel? stateFlags { get; set; }
+        public EventModel? @event { get; set; }
     }
 }

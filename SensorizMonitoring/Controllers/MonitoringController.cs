@@ -32,7 +32,7 @@ namespace SensorizMonitoring.Controllers
         //public async Task<IActionResult> InsertMonitoring([FromBody] MonitoringModel mnt)
         public IActionResult InsertMonitoring([FromBody] dynamic json)
         {
-             if (!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }

@@ -125,7 +125,7 @@ namespace SensorizMonitoring.Business
 
                             _logger.LogInformation("É passível de notificação!");
                             if (lstOwners != null && lstOwners.Count > 0)
-                            { 
+                            {
                                 foreach (var owner in lstOwners)
                                 {
                                     _logger.LogInformation("Tem owner!");
@@ -215,7 +215,6 @@ namespace SensorizMonitoring.Business
                         ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.atmosphericPressure);
                     }
 
-
                     unitOfMeasurement = " hPa";
                     fields = GetMessageTemplate(setting, monit.status.atmosphericPressure, 0, 0, unitOfMeasurement, "");
                     sTemplateID = _configuration["Settings:ZENVIA_WHATSAPP_TEMPLATE_ID"];
@@ -242,67 +241,92 @@ namespace SensorizMonitoring.Business
                         ResultMath = false;
                     }
                     break;
-                case 4: //lon
+                case 4: //Geolocation Router
                     //monit.pos.lon.ToString());
                     bnSensorRoute route = new bnSensorRoute();
                     ResultMath = route.isOnRoute(setting.lat_origin, setting.long_origin, setting.lat_destination, setting.long_destination, monit.pos.lat, monit.pos.lon, (double)setting.tolerance_radius);
                     break;
-                case 5: //cep
-                    //currentValueDouble = monit.pos.cep;
-                    break;
-                case 6: //external power
+                case 5: //external power
                     ResultMath = CheckMathComparationBool(setting.comparation_id, setting.b_value, monit.status.externalPower);
                     monitoringValue = monit.status.externalPower;
                     break;
-                case 7: //charging
+                case 6: //charging
                     ResultMath = CheckMathComparationBool(setting.comparation_id, setting.b_value, monit.status.charging);
                     monitoringValue = monit.status.charging;
                     break;
-                case 8: //battery_voltage
+                case 7: //battery_voltage
                     ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.batteryVoltage);
                     monitoringValue = monit.status.batteryVoltage;
                     break;
-                case 9: //light_level
+                case 8: //light_level
                     ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.lightLevel);
                     monitoringValue = monit.status.lightLevel;
                     break;
-                case 10: //orientation x
+                case 9: //orientation x
                     ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.orientation.x);
                     monitoringValue = monit.status.orientation.x;
                     break;
-                case 11: //orientation y
+                case 10: //orientation y
                     ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.orientation.y);
                     monitoringValue = monit.status.orientation.y;
                     break;
-                case 12: //orientation z
+                case 11: //orientation z
                     ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.orientation.z);
                     monitoringValue = monit.status.orientation.z;
                     break;
-                case 13: //vibration x
+                case 12: //vibration x
                     ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.vibration.x);
                     monitoringValue = monit.status.vibration.x;
                     break;
-                case 14: //vibration y
+                case 13: //vibration y
                     ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.vibration.y);
                     monitoringValue = monit.status.vibration.y;
                     break;
-                case 15: //vibration z
+                case 14: //vibration z
                     ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.vibration.z);
                     monitoringValue = monit.status.vibration.z;
                     break;
-                case 16: //comm_signal
+                case 15: //comm_signal
                     ResultMath = CheckMathComparationDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.signal);
                     monitoringValue = monit.status.signal;
                     break;
-                case 17: //tamper
+                case 16: //tamper
                     ResultMath = CheckMathComparationBool(setting.comparation_id, setting.b_value, gb.IntToBool(monit.status.tamper));
                     monitoringValue = monit.status.tamper;
                     break;
-                case 18: //movement
+                case 17: //movement
                     ResultMath = false;
                     break;
-                case 19: //Directions
+                case 18: //Directions
                     ResultMath = false;
+                    break;
+                case 19: //Impact
+                         //ResultMath = false;
+                    if (monit.@event is not null && (monit.@event.type == "impact"))
+                    {
+                        ResultMath = true;
+                        monitoringValue = monit.@event.G;
+
+                        isRecovery = true;
+
+                        unitOfMeasurement = "";
+                        fields = GetMessageTemplate(setting, monit.@event.G, monit.pos.lat, monit.pos.lon, unitOfMeasurement, "IMPACTO");
+                        sTemplateID = _configuration["Settings:ZENVIA_WHATSAPP_TEMPLATE_ID_DROPIMPACT"];
+                    }
+                    break;
+                case 20: //Drop
+                         //ResultMath = false;
+                    if (monit.@event is not null && (monit.@event.type == "drop"))
+                    {
+                        ResultMath = true;
+                        monitoringValue = monit.@event.G;
+
+                        isRecovery = true;
+
+                        unitOfMeasurement = "";
+                        fields = GetMessageTemplate(setting, monit.@event.G, monit.pos.lat, monit.pos.lon, unitOfMeasurement, "QUEDA");
+                        sTemplateID = _configuration["Settings:ZENVIA_WHATSAPP_TEMPLATE_ID_DROPIMPACT"];
+                    }
                     break;
                 default:
                     return false;
@@ -335,6 +359,11 @@ namespace SensorizMonitoring.Business
             else
                 return value.ToString();
         }
+        public string GetGoogleAddress(double lat, double lon) {
+
+            GoogleLocation gl = new GoogleLocation(_configuration);
+            return gl.GetAddressByCoordinators(lat, lon);
+        }
 
         public dynamic GetMessageTemplate(NotificationSettings setting, dynamic value, double lat, double lon, string unitOfMeasurement, string evento)
         {
@@ -355,9 +384,6 @@ namespace SensorizMonitoring.Business
                     break;
                 case 3:
                     //Encaixe Template Geolocation
-                    GoogleLocation gl = new GoogleLocation(_configuration);
-                    string currentLocation = gl.GetAddressByCoordinators(lat, lon);
-
                     return new
                     {
                         icon = DecideIconLocation(setting.priority),
@@ -367,18 +393,24 @@ namespace SensorizMonitoring.Business
                         long_ref = setting.long_origin.ToString(),
                         lat_conf = lat.ToString(),
                         long_conf = lon.ToString(),
-                        current_location = currentLocation
+                        current_location = GetGoogleAddress(lat, lon)
                     };
                     break;
                 case 6:
                 case 7:
-                    //Encaixe Template Bool
                     return null;
-                    break;
                 case 17:
-                    //sMessage = "Tamper: " + gb.TrataTamper(Convert.ToInt32(value))
-                    //    + "\n" + "Valor de Referência: " + gb.TrataTamper(Convert.ToInt32(setting.min_value));
                     return null;
+                case 19:
+                case 20:
+                    return new
+                    {
+                        icon = DecideIcon(setting.priority),
+                        codigo = setting.device_id.ToString(),
+                        evento = evento,
+                        g_value = value,
+                        current_location = GetGoogleAddress(lat, lon)
+                    };
                 default:
                     return null;
             }

@@ -5,7 +5,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 <Project>
   <PropertyGroup>
     <_PublishTargetUrl>C:\PUBLISH\SensorizMonitoring\linux</_PublishTargetUrl>
-    <History>True|2024-07-03T12:33:17.4228316Z||;False|2024-06-30T19:41:10.1633398-03:00||;True|2024-06-30T18:56:43.7821748-03:00||;True|2024-06-30T18:46:14.5492159-03:00||;True|2024-06-30T18:40:15.7049792-03:00||;</History>
+    <History>True|2024-08-06T12:20:19.6297790Z||;True|2024-07-03T09:33:17.4228316-03:00||;False|2024-06-30T19:41:10.1633398-03:00||;True|2024-06-30T18:56:43.7821748-03:00||;True|2024-06-30T18:46:14.5492159-03:00||;True|2024-06-30T18:40:15.7049792-03:00||;</History>
     <LastFailureDetails />
   </PropertyGroup>
 </Project>
