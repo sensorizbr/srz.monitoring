@@ -10,3 +10,4 @@ SensorizMonitoring/Dockerfile
 *.txt
 SensorizMonitoring/bin/Debug/net8.0/appsettings.json
 SensorizMonitoring/bin/Debug/net8.0/LOGS/arquivo_20240521.txt
+SensorizMonitoring/bin/Debug/net8.0/appsettings.json

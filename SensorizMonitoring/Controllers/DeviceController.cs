@@ -39,7 +39,7 @@ namespace SensorizMonitoring.Controllers
                 var insertCompany = new Device();
 
                 insertCompany.device_code = device.device_code;
-                insertCompany.company_id = device.company_id;
+                insertCompany.branch_id = device.branch_id;
                 insertCompany.description = device.description;
                 insertCompany.enabled = 1;
                 insertCompany.created_at = DateTime.Now;
@@ -146,8 +146,8 @@ namespace SensorizMonitoring.Controllers
         /// <summary>
         /// Lista Todos os Dispositivos por CompanyID
         /// </summary>
-        [HttpGet("{company_id}")]
-        public async Task<IActionResult> GetDeviceByCompanyID(int company_id)
+        [HttpGet]
+        public async Task<IActionResult> GetDeviceByBranchId(int iBranchID)
         {
             bnDevice dv = new bnDevice(_configuration);
 
@@ -159,7 +159,7 @@ namespace SensorizMonitoring.Controllers
             try
             {
                 var devices = await _context.Device
-                .Where(d => d.company_id == company_id)
+                .Where(d => d.branch_id == iBranchID)
                 .AsNoTracking()
                 .Select(d => new DeviceResponseTable
                 {
@@ -182,6 +182,11 @@ namespace SensorizMonitoring.Controllers
                         device.model = locoDevice.model.product;
                         if (locoDevice.firmware != null) { device.firmware = locoDevice.firmware.current; }
                         device.charging = locoDevice.statusIndicators.charging;
+                        if (locoDevice.lastKnownLocation != null) {
+                            device.lkl_lat = locoDevice.lastKnownLocation.global.lat;
+                            device.lkl_lng = locoDevice.lastKnownLocation.global.lon;
+                        }
+                        if (locoDevice.statusIndicators.battery != null) { device.battery = locoDevice.statusIndicators.battery; }
                     }
                 }
 

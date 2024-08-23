@@ -22,7 +22,7 @@ namespace SensorizMonitoring.Controllers
         }
 
         /// <summary>
-        /// Insere a Companhia
+        /// Insere a Filial
         /// </summary>
         [HttpPost]
         public async Task<IActionResult> InsertBranch([FromBody] BranchModel branch)
@@ -50,7 +50,7 @@ namespace SensorizMonitoring.Controllers
         }
 
         /// <summary>
-        /// Atualiza a Companhia
+        /// Atualiza a Filial
         /// </summary>
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBranch(int id, [FromBody] BranchModel branch)
@@ -86,7 +86,7 @@ namespace SensorizMonitoring.Controllers
         }
 
         /// <summary>
-        /// Remove Companhia
+        /// Remove Filial
         /// </summary>
         [HttpPut("{id}")]
         public async Task<IActionResult> DeleteBranch(int id)
@@ -110,7 +110,7 @@ namespace SensorizMonitoring.Controllers
         }
 
         /// <summary>
-        /// Ativa/Desativa Companhia. Basta passar o id e a flag, sendo 1 para ativar e 0 para desativar.
+        /// Ativa/Desativa Filial. Basta passar o id e a flag, sendo 1 para ativar e 0 para desativar.
         /// </summary>
         [HttpPut("{id}/{flag}")]
         public async Task<IActionResult> EnableDisableBranch(int id,int flag)
@@ -143,7 +143,7 @@ namespace SensorizMonitoring.Controllers
 
 
         /// <summary>
-        /// Lista todas as companhias de forma paginada
+        /// Lista todas as filiais de forma paginada
         /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetBranches(int limit, int page)
@@ -167,7 +167,7 @@ namespace SensorizMonitoring.Controllers
         }
 
         /// <summary>
-        /// Lista a Companhia por ID
+        /// Lista a Filial por ID
         /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetBranchById(int id)

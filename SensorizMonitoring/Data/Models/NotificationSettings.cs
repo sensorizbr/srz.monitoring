@@ -8,6 +8,7 @@ namespace SensorizMonitoring.Data.Models
     {
         public int id { get; set; }
         public long device_id { get; set; }
+        public int branch_id { get; set; }
         public string description { get; set; }
         public string priority { get; set; }
         public int sensor_type_id { get; set; }

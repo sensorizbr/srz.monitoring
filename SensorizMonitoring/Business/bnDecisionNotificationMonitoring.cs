@@ -218,6 +218,7 @@ namespace SensorizMonitoring.Business
                     unitOfMeasurement = " hPa";
                     fields = GetMessageTemplate(setting, monit.status.atmosphericPressure, 0, 0, unitOfMeasurement, "");
                     sTemplateID = _configuration["Settings:ZENVIA_WHATSAPP_TEMPLATE_ID"];
+
                     break;
                 case 3: //lat (entrada e saída)
                     if (monit.pos is not null && (monit.status.movement.Equals("STATIONARY")))

@@ -3,6 +3,7 @@
     public class NotificationSettingsModel
     {
         public long device_id { get; set; }
+        public int branch_id { get; set; }
         public string description { get; set; }
         public int sensor_type_id { get; set; }
         public int comparation_id { get; set; }

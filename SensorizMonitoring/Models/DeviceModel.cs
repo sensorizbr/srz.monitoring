@@ -6,7 +6,7 @@ namespace SensorizMonitoring.Models
     {
         public string device_code { get; set; }
 
-        public int company_id { get; set; }
+        public int branch_id { get; set; }
 
         [Required(ErrorMessage = "Field Description is Required")]
         [StringLength(100, ErrorMessage = "Should not have more then 100 Characteres")]

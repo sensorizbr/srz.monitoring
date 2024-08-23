@@ -36,6 +36,7 @@ namespace SensorizMonitoring.Controllers
                 var insertNS = new NotificationSettings();
 
                 insertNS.device_id = ns.device_id;
+                insertNS.branch_id = ns.branch_id;
                 insertNS.description = ns.description;
                 insertNS.sensor_type_id = ns.sensor_type_id;
                 insertNS.comparation_id = ns.comparation_id;
@@ -76,6 +77,7 @@ namespace SensorizMonitoring.Controllers
                 var existingNS = _context.NotificationSettings.Find(id);
 
                 existingNS.device_id = ns.device_id;
+                existingNS.branch_id = ns.branch_id;
                 existingNS.description = ns.description;
                 existingNS.sensor_type_id = ns.sensor_type_id;
                 existingNS.comparation_id = ns.comparation_id;
@@ -167,7 +169,7 @@ namespace SensorizMonitoring.Controllers
         /// Lista todas as configurações de forma paginada
         /// </summary>
         [HttpGet("{limit}/{page}")]
-        public async Task<IActionResult> GetAllNotificationsSettings(int limit, int page)
+        public async Task<IActionResult> GetAllNotificationsSettings(int iBranchId, int limit, int page)
         {
             if (!ModelState.IsValid)
             {
@@ -180,6 +182,7 @@ namespace SensorizMonitoring.Controllers
 
                 // Lógica para manipular a solicitação POST
                 var notificationsettings = existingNS
+                    .Where(c => c.branch_id == iBranchId)
                    .OrderBy(c => c.created_at) // or any other column you want to sort by
                    .Skip((page - 1) * limit)
                    .Take(limit);

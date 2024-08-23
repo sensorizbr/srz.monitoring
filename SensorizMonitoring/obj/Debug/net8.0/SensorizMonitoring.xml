@@ -4,6 +4,36 @@
         <name>SensorizMonitoring</name>
     </assembly>
     <members>
+        <member name="M:SensorizMonitoring.Controllers.BranchController.InsertBranch(SensorizMonitoring.Models.BranchModel)">
+            <summary>
+            Insere a Filial
+            </summary>
+        </member>
+        <member name="M:SensorizMonitoring.Controllers.BranchController.UpdateBranch(System.Int32,SensorizMonitoring.Models.BranchModel)">
+            <summary>
+            Atualiza a Filial
+            </summary>
+        </member>
+        <member name="M:SensorizMonitoring.Controllers.BranchController.DeleteBranch(System.Int32)">
+            <summary>
+            Remove Filial
+            </summary>
+        </member>
+        <member name="M:SensorizMonitoring.Controllers.BranchController.EnableDisableBranch(System.Int32,System.Int32)">
+            <summary>
+            Ativa/Desativa Filial. Basta passar o id e a flag, sendo 1 para ativar e 0 para desativar.
+            </summary>
+        </member>
+        <member name="M:SensorizMonitoring.Controllers.BranchController.GetBranches(System.Int32,System.Int32)">
+            <summary>
+            Lista todas as filiais de forma paginada
+            </summary>
+        </member>
+        <member name="M:SensorizMonitoring.Controllers.BranchController.GetBranchById(System.Int32)">
+            <summary>
+            Lista a Filial por ID
+            </summary>
+        </member>
         <member name="M:SensorizMonitoring.Controllers.CompanyController.InsertCompany(SensorizMonitoring.Models.CompanyModel)">
             <summary>
             Insere a Companhia
@@ -54,7 +84,7 @@
             Remove o dispositivo
             </summary>
         </member>
-        <member name="M:SensorizMonitoring.Controllers.DeviceController.GetDeviceByCompanyID(System.Int32)">
+        <member name="M:SensorizMonitoring.Controllers.DeviceController.GetDeviceByBranchId(System.Int32)">
             <summary>
             Lista Todos os Dispositivos por CompanyID
             </summary>
@@ -124,7 +154,7 @@
             Ativa/Desativa a configuração de uma notificação de um determinado dispositivo
             </summary>
         </member>
-        <member name="M:SensorizMonitoring.Controllers.NotificationSettingsController.GetAllNotificationsSettings(System.Int32,System.Int32)">
+        <member name="M:SensorizMonitoring.Controllers.NotificationSettingsController.GetAllNotificationsSettings(System.Int32,System.Int32,System.Int32)">
             <summary>
             Lista todas as configurações de forma paginada
             </summary>
@@ -144,6 +174,26 @@
             Lista Todos os Tipos de Sensores dos Dispositivos
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:SensorizMonitoring.Controllers.UserController.InsertUser(SensorizMonitoring.Models.UserModel)">
+            <summary>
+            Insere o Usuario
+            </summary>
+        </member>
+        <member name="M:SensorizMonitoring.Controllers.UserController.UpdateUser(System.Int32,SensorizMonitoring.Models.UserModel)">
+            <summary>
+            Atualiza o usuário
+            </summary>
+        </member>
+        <member name="M:SensorizMonitoring.Controllers.UserController.EnableDisableUser(System.Int32,System.Int32)">
+            <summary>
+            Ativa/Desativa Usuário. Basta passar o id e a flag, sendo 1 para ativar e 0 para desativar.
+            </summary>
+        </member>
+        <member name="M:SensorizMonitoring.Controllers.UserController.GetAllUsersByBranch(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Lista todas as configurações de forma paginada
+            </summary>
         </member>
     </members>
 </doc>
