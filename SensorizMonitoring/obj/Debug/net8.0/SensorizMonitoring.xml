@@ -109,6 +109,11 @@
             Recebe as notificações dos dispositivos da LocoAware
             </summary>
         </member>
+        <member name="M:SensorizMonitoring.Controllers.NotificationLogsController.GetAllNotificationsLogs(System.Int32,System.Int64,System.Int32,System.Int32)">
+            <summary>
+            Lista todos o Log de Notificações de forma paginada
+            </summary>
+        </member>
         <member name="M:SensorizMonitoring.Controllers.NotificationOwnerController.InsertNotificationOwner(SensorizMonitoring.Models.NotificationOwner.NotificationOwnerModel)">
             <summary>
             Insere Owner da Notificação de Monitoramento

@@ -624,7 +624,7 @@ namespace SensorizMonitoring.Business
             }
         }
 
-        public List<NotificationControl> GetNotificationControl(int deviceID, int notificationID)
+        public List<NotificationControl> GetNotificationControl(long deviceID, int notificationID)
         {
             try
             {
@@ -714,15 +714,12 @@ namespace SensorizMonitoring.Business
                 var insertNotificationLog = new NotificationLog();
 
                 insertNotificationLog.device_id = st.device_id;
+                insertNotificationLog.branch_id = st.branch_id;
                 insertNotificationLog.seq = seq;
-                insertNotificationLog.description = sDeviceDescription;
-                insertNotificationLog.sensor_type_id = st.sensor_type_id;
-                insertNotificationLog.comparation_id = st.comparation_id;
+                insertNotificationLog.setting_id = st.id;
                 insertNotificationLog.phone_number = on.phone_number;
                 insertNotificationLog.mail = on.mail;
                 insertNotificationLog.message = sMessage;
-                insertNotificationLog.reference_value = "";
-                insertNotificationLog.monitoring_value = "";
                 insertNotificationLog.created_at = DateTime.Now;
 
                 _context.Add(insertNotificationLog);

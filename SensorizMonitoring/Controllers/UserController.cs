@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SensorizMonitoring.Business;
@@ -9,6 +11,7 @@ using System.Text;
 namespace SensorizMonitoring.Controllers
 {
     [Route("[controller]/[action]")]
+    [ApiKey]
     [ApiController]
     public class UserController : Controller
     {
@@ -33,12 +36,16 @@ namespace SensorizMonitoring.Controllers
             {
                 var insertUser = new User();
 
+                byte[] bytes = Encoding.UTF8.GetBytes(user.password);
+
                 insertUser.branch_id = user.branch_id;
-                insertUser.document = user.document;
+                insertUser.document = user.document; 
+                insertUser.role_id = user.role_id;
+                insertUser.functional_number = user.functional_number;
                 insertUser.full_name = user.full_name;
                 insertUser.mail = user.mail;
                 insertUser.phone_number = user.phone_number;
-                insertUser.password = Encoding.UTF8.GetBytes(user.password);
+                insertUser.password = Convert.ToBase64String(bytes);
                 insertUser.enabled = 0;
                 insertUser.created_at = DateTime.Now;
 
@@ -154,25 +161,25 @@ namespace SensorizMonitoring.Controllers
 
             try
             {
-                var existingUser = await _context.User
 
+                var user = _context.User
                     .AsNoTracking()
-                    .Where(c => c.branch_id == iBranchId)
-                    .Select(c => new
-                    {
-                        // Selecione apenas as colunas que você precisa
-                        c.id,
-                        c.full_name,
-                        c.mail,
-                        c.branch_id,
-                        c.created_at
+                    .Where(u => u.branch_id == iBranchId)
+                    .Join(_context.Role, u => u.role_id, r => r.id, (u, r) => new {
+                        u.id,
+                        u.branch_id,
+                        u.role_id,
+                        u.full_name,
+                        u.mail,
+                        u.created_at,
+                        role_name = r.role_name
                     })
-                    .OrderBy(c => c.created_at)
+                    .OrderBy(u => u.created_at)
                     .Skip((page - 1) * limit)
                     .Take(limit)
-                    .ToListAsync();
+                    .ToList();
 
-                return Ok(existingUser);
+                return Ok(user);
             }
             catch (DbUpdateConcurrencyException ex)
             {

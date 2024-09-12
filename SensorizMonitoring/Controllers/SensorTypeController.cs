@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SensorizMonitoring.Data.Context;
@@ -6,6 +7,7 @@ using SensorizMonitoring.Data.Models;
 namespace SensorizMonitoring.Controllers
 {
     [Route("[controller]/[action]")]
+    [ApiKey]
     [ApiController]
     public class SensorTypeController : Controller
     {

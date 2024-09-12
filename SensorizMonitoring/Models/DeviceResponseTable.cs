@@ -11,6 +11,7 @@
         public int enabled { get; set; }
         public double lkl_lat { get; set; }
         public double lkl_lng { get; set; }
+        public string address { get; set; }
         public string battery { get; set; }
         public DateTime LastReport { get; set; }
         public DateTime created_at { get; set; }

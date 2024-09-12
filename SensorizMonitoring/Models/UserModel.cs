@@ -12,7 +12,9 @@ namespace SensorizMonitoring.Models
         [StringLength(15, ErrorMessage = "Should not have more then 15 Characteres")]
         public string document { get; set; }
 
-        public int user_type_id { get; set; }
+        public string functional_number { get; set; }
+
+        public int role_id { get; set; }
 
         [Required(ErrorMessage = "Field Full Name is Required")]
         [StringLength(50, ErrorMessage = "Should not have more then 50 Characteres")]
@@ -21,7 +23,7 @@ namespace SensorizMonitoring.Models
 
         [Required(ErrorMessage = "Field Mail is Required")]
         [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}(?:\.[a-zA-Z]{2,63})?$", ErrorMessage = "Invalid email address")]
-        [DefaultValue("example@example.com")]
+        [DefaultValue("user@provider.com")]
         public string mail { get; set; }
 
         [Required(ErrorMessage = "Field Phone Number is Required")]

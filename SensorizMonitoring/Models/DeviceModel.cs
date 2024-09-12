@@ -4,7 +4,7 @@ namespace SensorizMonitoring.Models
 {
     public class DeviceModel
     {
-        public string device_code { get; set; }
+        public long device_code { get; set; }
 
         public int branch_id { get; set; }
 

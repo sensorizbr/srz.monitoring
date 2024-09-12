@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SensorizMonitoring.Data.Context;
@@ -7,6 +8,7 @@ using SensorizMonitoring.Models;
 namespace SensorizMonitoring.Controllers
 {
     [Route("[controller]/[action]")]
+    [ApiKey]
     [ApiController]
     public class CompanyController : Controller
     {
@@ -14,7 +16,7 @@ namespace SensorizMonitoring.Controllers
         private readonly AppDbContext _context;
         private readonly ILogger _logger;
 
-        public CompanyController(IConfiguration configuration, AppDbContext context, ILogger logger)
+        public CompanyController(IConfiguration configuration, AppDbContext context, ILogger<Company> logger)
         {
             _configuration = configuration;
             _context = context;

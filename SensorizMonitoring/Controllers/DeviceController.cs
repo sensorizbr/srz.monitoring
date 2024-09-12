@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Nancy.Json;
@@ -11,6 +12,7 @@ using static SensorizMonitoring.Business.bnDevice;
 namespace SensorizMonitoring.Controllers
 {
     [Route("[controller]/[action]")]
+    [ApiKey]
     [ApiController]
     public class DeviceController : Controller
     {
@@ -164,7 +166,7 @@ namespace SensorizMonitoring.Controllers
                 .Select(d => new DeviceResponseTable
                 {
                     id = d.id,
-                    device_code = d.device_code,
+                    device_code = d.device_code.ToString(),
                     description = d.description,
                     created_at = d.created_at,
                 })
@@ -176,15 +178,19 @@ namespace SensorizMonitoring.Controllers
                 // Merge the lists
                 foreach (var locoDevice in dr.results)
                 {
-                    var device = devices.Find(d => d.device_code == locoDevice.id);
+                    var device = devices.Find(d => long.Parse(d.device_code) == locoDevice.id);
                     if (device != null)
                     {
                         device.model = locoDevice.model.product;
                         if (locoDevice.firmware != null) { device.firmware = locoDevice.firmware.current; }
                         device.charging = locoDevice.statusIndicators.charging;
                         if (locoDevice.lastKnownLocation != null) {
+
+                            GoogleLocation gl = new GoogleLocation(_configuration);
+
                             device.lkl_lat = locoDevice.lastKnownLocation.global.lat;
                             device.lkl_lng = locoDevice.lastKnownLocation.global.lon;
+                            device.address = gl.GetAddressByCoordinators(locoDevice.lastKnownLocation.global.lat, locoDevice.lastKnownLocation.global.lon);
                         }
                         if (locoDevice.statusIndicators.battery != null) { device.battery = locoDevice.statusIndicators.battery; }
                     }

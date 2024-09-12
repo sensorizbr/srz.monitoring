@@ -195,3 +195,4 @@ C:\GIT\srz.monitoring\SensorizMonitoring\obj\Debug\net8.0\SensorizMonitoring.xml
 C:\GIT\srz.monitoring\SensorizMonitoring\obj\Debug\net8.0\SensorizMonitoring.pdb
 C:\GIT\srz.monitoring\SensorizMonitoring\obj\Debug\net8.0\SensorizMonitoring.genruntimeconfig.cache
 C:\GIT\srz.monitoring\SensorizMonitoring\obj\Debug\net8.0\ref\SensorizMonitoring.dll
+C:\GIT\srz.monitoring\SensorizMonitoring\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -10,6 +11,7 @@ using SensorizMonitoring.Utils;
 namespace SensorizMonitoring.Controllers
 {
     [Route("[controller]/[action]")]
+    //[ApiKey]
     [ApiController]
     public class MonitoringController : Controller
     {

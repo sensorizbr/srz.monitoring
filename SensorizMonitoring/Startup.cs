@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -51,7 +53,18 @@ namespace SensorizMonitoring
                     .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
             );
 
-            services.AddAuthorization();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:SecretKey"]))
+                    };
+                });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -65,13 +78,15 @@ namespace SensorizMonitoring
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
-
+            
             app.UseHttpsRedirection();
             app.UseRouting();
-            app.UseCors("MyPolicy");
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseCors("AllowAll");
+
+            app.UseMiddleware<ApiKeyMiddleware>();
 
 
             app.UseEndpoints(endpoints =>

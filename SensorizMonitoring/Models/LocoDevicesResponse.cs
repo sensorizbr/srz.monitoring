@@ -61,7 +61,7 @@
 
     public class Result
     {
-        public string id { get; set; }
+        public long id { get; set; }
         public string name { get; set; }
         public List<object> labels { get; set; }
         public Owner owner { get; set; }

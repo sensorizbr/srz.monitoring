@@ -5,6 +5,7 @@ using SensorizMonitoring.Business;
 namespace SensorizMonitoring.Controllers
 {
     [Route("[controller]/[action]")]
+    [ApiKey]
     [ApiController]
     public class DeviceReferenceController : Controller
     {
