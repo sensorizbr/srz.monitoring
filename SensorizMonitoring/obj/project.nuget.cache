@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "gAGXKGft6tk=",
+  "dgSpecHash": "nFu+iqukLNc=",
   "success": true,
   "projectFilePath": "C:\\GIT\\srz.monitoring\\SensorizMonitoring\\SensorizMonitoring.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\rissi\\.nuget\\packages\\antlr3.runtime\\3.5.1\\antlr3.runtime.3.5.1.nupkg.sha512",
     "C:\\Users\\rissi\\.nuget\\packages\\bouncycastle.cryptography\\2.2.1\\bouncycastle.cryptography.2.2.1.nupkg.sha512",
     "C:\\Users\\rissi\\.nuget\\packages\\google.protobuf\\3.25.1\\google.protobuf.3.25.1.nupkg.sha512",
     "C:\\Users\\rissi\\.nuget\\packages\\grpc.core.api\\2.52.0\\grpc.core.api.2.52.0.nupkg.sha512",
@@ -115,6 +116,7 @@
     "C:\\Users\\rissi\\.nuget\\packages\\sharpabp.abp.opentelemetry\\3.3.4\\sharpabp.abp.opentelemetry.3.3.4.nupkg.sha512",
     "C:\\Users\\rissi\\.nuget\\packages\\sharpabp.abp.opentelemetry.abstractions\\3.3.4\\sharpabp.abp.opentelemetry.abstractions.3.3.4.nupkg.sha512",
     "C:\\Users\\rissi\\.nuget\\packages\\sharpabp.abp.opentelemetry.exporter.prometheus.aspnetcore\\3.3.4\\sharpabp.abp.opentelemetry.exporter.prometheus.aspnetcore.3.3.4.nupkg.sha512",
+    "C:\\Users\\rissi\\.nuget\\packages\\stringtemplate4\\4.0.8\\stringtemplate4.4.0.8.nupkg.sha512",
     "C:\\Users\\rissi\\.nuget\\packages\\swashbuckle.aspnetcore\\6.5.0\\swashbuckle.aspnetcore.6.5.0.nupkg.sha512",
     "C:\\Users\\rissi\\.nuget\\packages\\swashbuckle.aspnetcore.redoc\\6.5.0\\swashbuckle.aspnetcore.redoc.6.5.0.nupkg.sha512",
     "C:\\Users\\rissi\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.5.0\\swashbuckle.aspnetcore.swagger.6.5.0.nupkg.sha512",

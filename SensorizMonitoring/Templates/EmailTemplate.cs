@@ -4,7 +4,7 @@
     {
         public string from { get; set; }
         public string to { get; set; }
-        public List<WhatsAppContent> contents { get; set; }
+        public List<EmailContent> contents { get; set; }
         public representative representative { get; set; }
     }
 

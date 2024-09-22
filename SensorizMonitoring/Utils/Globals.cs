@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
+using System.Web;
 
 namespace SensorizMonitoring
 {
@@ -159,6 +160,18 @@ namespace SensorizMonitoring
         private double ToRadians(double angle)
         {
             return (Math.PI / 180) * angle;
+        }
+
+        public string TrataHtmlRegex(string html)
+        {
+            string cleanHtml = HttpUtility.HtmlDecode(html);
+            cleanHtml = System.Text.RegularExpressions.Regex.Replace(cleanHtml, @"[^\u0020-\u007E]", m =>
+            {
+                int charCode = (int)m.Groups[0].Value[0];
+                return "&#" + charCode + ";";
+            });
+
+            return cleanHtml; // return the cleaned HTML
         }
     }
 

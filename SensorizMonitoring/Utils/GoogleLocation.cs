@@ -53,5 +53,17 @@ namespace SensorizMonitoring.Utils
                 return "Não identificado";
             }
         }
+
+        public string GetGoogleAddress(double lat, double lon)
+        {
+            // Check if the latitude or longitude values are invalid
+            if (lat == 0.0 || double.IsNaN(lat) || lon == 0.0 || double.IsNaN(lon))
+            {
+                return "Não encontrado";
+            }
+
+            GoogleLocation gl = new GoogleLocation(_configuration);
+            return gl.GetAddressByCoordinators(lat, lon);
+        }
     }
 }

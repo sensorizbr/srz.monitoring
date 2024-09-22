@@ -2,6 +2,7 @@
 using IdentityModel.Client;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SensorizMonitoring.Data.Models;
 using SensorizMonitoring.Models;
 using SensorizMonitoring.Templates;
@@ -82,7 +83,6 @@ namespace ZenviaApi
             string ApiToken = _configuration["Settings:ZENVIA_X-API-TOKEN"];
             string ApiUrl = _configuration["Settings:ZENVIA_URL_WHATSAPP"];
             string ApiSender = _configuration["Settings:ZENVIA_WHATSAPP_SENDER"];
-            //string ApiTemplateID = _configuration["Settings:ZENVIA_WHATSAPP_TEMPLATE_ID"];
 
             WhatsAppContent wpContents = new WhatsAppContent();
             wpContents.type = "template";
@@ -130,57 +130,63 @@ namespace ZenviaApi
             return result;
         }
 
-        //public SendResponse SendEmail(string to, dynamic varsfieldsTemplate)
-        //{
-        //    string ApiToken = _configuration["Settings:ZENVIA_X-API-TOKEN"];
-        //    string ApiUrl = _configuration["Settings:ZENVIA_URL_EMAIL"];
-        //    string ApiSender = _configuration["Settings:ZENVIA_EMAIL_SENDER"];
-        //    //string ApiTemplateID = _configuration["Settings:ZENVIA_WHATSAPP_TEMPLATE_ID"];
+        public SendResponse SendEmail(string to, string html)
+        {
+            string ApiToken = _configuration["Settings:ZENVIA_X-API-TOKEN"];
+            string ApiUrl = _configuration["Settings:ZENVIA_URL_EMAIL"];
+            string ApiSender = _configuration["Settings:ZENVIA_EMAIL_SENDER"];
 
-        //    EmailContent emContents = new EmailContent();
-        //    emContents.type = "email";
-        //    emContents.subject = "Alerta Sensoriz";
-        //    emContents.html = varsfieldsTemplate;
+            EmailContent emContents = new EmailContent();
+            emContents.type = "email";
+            emContents.subject = "Alerta Sensoriz";
+            emContents.html = html;
+            emContents.attachment = new List<string>();
+            emContents.bcc = new List<string>();
+            emContents.cc = new List<string>();
 
-        //    EmailMensagem emMessage = new EmailMensagem();
-        //    emMessage.from = ApiSender;
-        //    emMessage.to = to.Trim();
+            representative rp = new representative();
+            rp.name = "SENSORIZ";
+            
+            EmailMensagem emMessage = new EmailMensagem();
+            emMessage.from = ApiSender;
+            emMessage.to = to.Trim();
+            emMessage.representative = rp;
 
-        //    emMessage.contents = new List<WhatsAppContent>();
-        //    emMessage.contents.Add(emContents);
+            emMessage.contents = new List<EmailContent>();
+            emMessage.contents.Add(emContents);
 
-        //    var jsonBody = JsonConvert.SerializeObject(emMessage);
-        //    var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+            var jsonBody = JsonConvert.SerializeObject(emMessage);
+            var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
-        //    var request = new HttpRequestMessage(HttpMethod.Post, ApiUrl)
-        //    {
-        //        Content = content
-        //    };
+            var request = new HttpRequestMessage(HttpMethod.Post, ApiUrl)
+            {
+                Content = content
+            };
 
-        //    request.Headers.Add("X-API-TOKEN", ApiToken);
+            request.Headers.Add("X-API-TOKEN", ApiToken);
 
-        //    var response = _httpClient.Send(request);
+            var response = _httpClient.Send(request);
 
-        //    SendResponse result;
+            SendResponse result;
 
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        var responseBody = response.Content.ReadAsStringAsync().Result;
-        //        var sendResponse = JsonConvert.DeserializeObject<SendMessageResponse>(responseBody);
-        //        result = new SendResponse { StatusCode = response.StatusCode, Success = true, Response = sendResponse };
+            if (response.IsSuccessStatusCode)
+            {
+                var responseBody = response.Content.ReadAsStringAsync().Result;
+                var sendResponse = JsonConvert.DeserializeObject<SendMessageResponse>(responseBody);
+                result = new SendResponse { StatusCode = response.StatusCode, Success = true, Response = sendResponse };
 
-        //        _logger.LogInformation("Enviou Notificacao");
-        //        _logger.LogInformation(responseBody);
-        //    }
-        //    else
-        //    {
-        //        result = new SendResponse { StatusCode = response.StatusCode, Success = false, ErrorMessage = $"Error sending Whatsapp message: {response.ReasonPhrase}" };
+                _logger.LogInformation("Enviou Notificacao");
+                _logger.LogInformation(responseBody);
+            }
+            else
+            {
+                result = new SendResponse { StatusCode = response.StatusCode, Success = false, ErrorMessage = $"Error sending Whatsapp message: {response.ReasonPhrase}" };
 
-        //        _logger.LogCritical("Não Enviou Notificacao");
-        //        _logger.LogCritical(result.ToString());
-        //    }
+                _logger.LogCritical("Não Enviou Notificacao");
+                _logger.LogCritical(result.ToString());
+            }
 
-        //    return result;
-        //}
+            return result;
+        }
     }
 }

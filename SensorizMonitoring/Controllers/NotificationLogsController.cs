@@ -50,7 +50,10 @@ namespace SensorizMonitoring.Controllers
                         SettingDescription = x.dns.description,
                         x.nl.mail,
                         x.nl.phone_number,
-                        message = JsonConvert.DeserializeObject<WhatsAppMensagem>(x.nl.message),
+                        //message_response = JsonConvert.DeserializeObject<WhatsAppMensagem>(x.nl.message_response),
+                        //message_request = JsonConvert.DeserializeObject<WhatsAppMensagem>(x.nl.message_request),
+                        message_request = x.nl.message_request,
+                        message_response = x.nl.message_response,
                         x.nl.created_at
                     })
                     .OrderBy(c => c.created_at)

@@ -11,7 +11,6 @@ using SensorizMonitoring.Utils;
 namespace SensorizMonitoring.Controllers
 {
     [Route("[controller]/[action]")]
-    //[ApiKey]
     [ApiController]
     public class MonitoringController : Controller
     {
@@ -44,7 +43,7 @@ namespace SensorizMonitoring.Controllers
                 string jsonString = json.ToString();
                 MonitoringModel mnt = JsonConvert.DeserializeObject<MonitoringModel>(jsonString);
 
-                bnDecisionNotificationMonitoring dec = new bnDecisionNotificationMonitoring(_configuration, _context, _logger);
+                DecisionRules dec = new DecisionRules(_configuration, _context, _logger);
                 Globals gb = new Globals();
 
                 dec.GetNotificationSettings(mnt);

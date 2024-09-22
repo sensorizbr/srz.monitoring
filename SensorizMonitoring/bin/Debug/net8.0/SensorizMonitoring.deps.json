@@ -22,12 +22,24 @@
           "OpenTelemetry.Instrumentation.Runtime": "1.8.0",
           "Pomelo.EntityFrameworkCore.MySql": "8.0.2",
           "SharpAbp.Abp.OpenTelemetry.Exporter.Prometheus.AspNetCore": "3.3.4",
+          "StringTemplate4": "4.0.8",
           "Swashbuckle.AspNetCore": "6.5.0",
           "Swashbuckle.AspNetCore.ReDoc": "6.5.0",
           "prometheus-net.AspNetCore": "8.2.1"
         },
         "runtime": {
           "SensorizMonitoring.dll": {}
+        }
+      },
+      "Antlr3.Runtime/3.5.1": {
+        "dependencies": {
+          "NETStandard.Library": "1.6.1"
+        },
+        "runtime": {
+          "lib/netstandard1.1/Antlr3.Runtime.dll": {
+            "assemblyVersion": "3.5.0.2",
+            "fileVersion": "3.5.1.0"
+          }
         }
       },
       "BouncyCastle.Cryptography/2.2.1": {
@@ -1161,6 +1173,18 @@
           "lib/net8.0/SharpAbp.Abp.OpenTelemetry.Exporter.Prometheus.AspNetCore.dll": {
             "assemblyVersion": "3.3.4.0",
             "fileVersion": "3.3.4.0"
+          }
+        }
+      },
+      "StringTemplate4/4.0.8": {
+        "dependencies": {
+          "Antlr3.Runtime": "3.5.1",
+          "NETStandard.Library": "1.6.1"
+        },
+        "runtime": {
+          "lib/netstandard1.3/Antlr4.StringTemplate.dll": {
+            "assemblyVersion": "4.0.7.0",
+            "fileVersion": "4.0.8.0"
           }
         }
       },
@@ -2493,6 +2517,13 @@
       "serviceable": false,
       "sha512": ""
     },
+    "Antlr3.Runtime/3.5.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ZwCEpLCLZXkjzf1lYEixp9hgVlYYk33ACHn6xjFyVhGRi2BpoYQez0qtatbetdylASWYTG+cGz0CGR4z66JM4w==",
+      "path": "antlr3.runtime/3.5.1",
+      "hashPath": "antlr3.runtime.3.5.1.nupkg.sha512"
+    },
     "BouncyCastle.Cryptography/2.2.1": {
       "type": "package",
       "serviceable": true,
@@ -3269,6 +3300,13 @@
       "sha512": "sha512-npkQYDbW9YiS1tyO5V2DY6i/nsACJvcxWuqnvnv3vp74k4DqbweUCy71YV7tDQALMdNMv+bNF50MoUZPHzNj9g==",
       "path": "sharpabp.abp.opentelemetry.exporter.prometheus.aspnetcore/3.3.4",
       "hashPath": "sharpabp.abp.opentelemetry.exporter.prometheus.aspnetcore.3.3.4.nupkg.sha512"
+    },
+    "StringTemplate4/4.0.8": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Rx3C673O+nvM1ZvOXDslzmIbpgCR8QHd0FD1iKP/srNZPi5Zhr5Ln4gHzRGLvofMkpVf/aJPBRkcD6VzqgV4rQ==",
+      "path": "stringtemplate4/4.0.8",
+      "hashPath": "stringtemplate4.4.0.8.nupkg.sha512"
     },
     "Swashbuckle.AspNetCore/6.5.0": {
       "type": "package",

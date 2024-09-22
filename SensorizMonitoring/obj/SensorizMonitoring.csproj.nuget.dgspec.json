@@ -104,6 +104,10 @@
               "target": "Package",
               "version": "[3.3.4, )"
             },
+            "StringTemplate4": {
+              "target": "Package",
+              "version": "[4.0.8, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.5.0, )"

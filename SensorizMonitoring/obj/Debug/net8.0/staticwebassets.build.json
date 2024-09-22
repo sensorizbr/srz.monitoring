@@ -1,11 +1,39 @@
 {
   "Version": 1,
-  "Hash": "Ft0vZAR32zdVaLRRJfwY1l6rXUX5oV4lZFqNFHamDbk=",
+  "Hash": "ybUL72PfyHXD9iLo1fkIW/daKDMbcsu2RJzBtyCSQUc=",
   "Source": "SensorizMonitoring",
   "BasePath": "_content/SensorizMonitoring",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": []
+  "DiscoveryPatterns": [
+    {
+      "Name": "SensorizMonitoring\\wwwroot",
+      "Source": "SensorizMonitoring",
+      "ContentRoot": "C:\\GIT\\srz.monitoring\\SensorizMonitoring\\wwwroot\\",
+      "BasePath": "_content/SensorizMonitoring",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\GIT\\srz.monitoring\\SensorizMonitoring\\wwwroot\\MailTemplates\\Temperature.html",
+      "SourceId": "SensorizMonitoring",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\GIT\\srz.monitoring\\SensorizMonitoring\\wwwroot\\",
+      "BasePath": "_content/SensorizMonitoring",
+      "RelativePath": "MailTemplates/Temperature.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\MailTemplates\\Temperature.html"
+    }
+  ]
 }

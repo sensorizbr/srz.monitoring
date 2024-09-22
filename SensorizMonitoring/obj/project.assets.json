@@ -2,6 +2,22 @@
   "version": 3,
   "targets": {
     "net8.0": {
+      "Antlr3.Runtime/3.5.1": {
+        "type": "package",
+        "dependencies": {
+          "NETStandard.Library": "1.6.0"
+        },
+        "compile": {
+          "lib/netstandard1.1/Antlr3.Runtime.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard1.1/Antlr3.Runtime.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "BouncyCastle.Cryptography/2.2.1": {
         "type": "package",
         "compile": {
@@ -2022,6 +2038,23 @@
         "runtime": {
           "lib/net8.0/SharpAbp.Abp.OpenTelemetry.Exporter.Prometheus.AspNetCore.dll": {
             "related": ".pdb;.xml"
+          }
+        }
+      },
+      "StringTemplate4/4.0.8": {
+        "type": "package",
+        "dependencies": {
+          "Antlr3.Runtime": "3.5.1",
+          "NETStandard.Library": "1.6.0"
+        },
+        "compile": {
+          "lib/netstandard1.3/Antlr4.StringTemplate.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard1.3/Antlr4.StringTemplate.dll": {
+            "related": ".xml"
           }
         }
       },
@@ -4374,6 +4407,25 @@
     }
   },
   "libraries": {
+    "Antlr3.Runtime/3.5.1": {
+      "sha512": "ZwCEpLCLZXkjzf1lYEixp9hgVlYYk33ACHn6xjFyVhGRi2BpoYQez0qtatbetdylASWYTG+cGz0CGR4z66JM4w==",
+      "type": "package",
+      "path": "antlr3.runtime/3.5.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "antlr3.runtime.3.5.1.nupkg.sha512",
+        "antlr3.runtime.nuspec",
+        "lib/net20/Antlr3.Runtime.dll",
+        "lib/net20/Antlr3.Runtime.xml",
+        "lib/net40-client/Antlr3.Runtime.dll",
+        "lib/net40-client/Antlr3.Runtime.xml",
+        "lib/netstandard1.1/Antlr3.Runtime.dll",
+        "lib/netstandard1.1/Antlr3.Runtime.xml",
+        "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/Antlr3.Runtime.dll",
+        "lib/portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1/Antlr3.Runtime.xml"
+      ]
+    },
     "BouncyCastle.Cryptography/2.2.1": {
       "sha512": "A6Zr52zVqJKt18ZBsTnX0qhG0kwIQftVAjLmszmkiR/trSp8H+xj1gUOzk7XHwaKgyREMSV1v9XaKrBUeIOdvQ==",
       "type": "package",
@@ -7398,6 +7450,21 @@
         "lib/net8.0/SharpAbp.Abp.OpenTelemetry.Exporter.Prometheus.AspNetCore.xml",
         "sharpabp.abp.opentelemetry.exporter.prometheus.aspnetcore.3.3.4.nupkg.sha512",
         "sharpabp.abp.opentelemetry.exporter.prometheus.aspnetcore.nuspec"
+      ]
+    },
+    "StringTemplate4/4.0.8": {
+      "sha512": "Rx3C673O+nvM1ZvOXDslzmIbpgCR8QHd0FD1iKP/srNZPi5Zhr5Ln4gHzRGLvofMkpVf/aJPBRkcD6VzqgV4rQ==",
+      "type": "package",
+      "path": "stringtemplate4/4.0.8",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net35-client/Antlr4.StringTemplate.dll",
+        "lib/net35-client/Antlr4.StringTemplate.xml",
+        "lib/netstandard1.3/Antlr4.StringTemplate.dll",
+        "lib/netstandard1.3/Antlr4.StringTemplate.xml",
+        "stringtemplate4.4.0.8.nupkg.sha512",
+        "stringtemplate4.nuspec"
       ]
     },
     "Swashbuckle.AspNetCore/6.5.0": {
@@ -12583,6 +12650,7 @@
       "OpenTelemetry.Instrumentation.Runtime >= 1.8.0",
       "Pomelo.EntityFrameworkCore.MySql >= 8.0.2",
       "SharpAbp.Abp.OpenTelemetry.Exporter.Prometheus.AspNetCore >= 3.3.4",
+      "StringTemplate4 >= 4.0.8",
       "Swashbuckle.AspNetCore >= 6.5.0",
       "Swashbuckle.AspNetCore.ReDoc >= 6.5.0",
       "prometheus-net.AspNetCore >= 8.2.1"
@@ -12690,6 +12758,10 @@
           "SharpAbp.Abp.OpenTelemetry.Exporter.Prometheus.AspNetCore": {
             "target": "Package",
             "version": "[3.3.4, )"
+          },
+          "StringTemplate4": {
+            "target": "Package",
+            "version": "[4.0.8, )"
           },
           "Swashbuckle.AspNetCore": {
             "target": "Package",

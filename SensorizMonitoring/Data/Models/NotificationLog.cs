@@ -14,7 +14,8 @@ namespace SensorizMonitoring.Data.Models
         public int setting_id { get; set; }
         public string phone_number { get; set; }
         public string mail { get; set; }
-        public string message { get; set; }
+        public string message_request { get; set; }
+        public string message_response { get; set; }
         public DateTime created_at { get; set; }
     }
 }
