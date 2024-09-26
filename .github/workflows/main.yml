@@ -22,6 +22,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: sensoriz-monitoring
+          path: SensorizMonitoring/bin/Release/net8.0/linux-x64/
 
       - name: Deploy to server
         uses: appleboy/ssh-action@master
@@ -31,5 +32,5 @@ jobs:
           password: qpwoeiruTY3164@
           script: |
             mkdir -p /home/monitoring
-            cp -r sensoriz-monitoring/* /home/monitoring/
+            cp -r SensorizMonitoring/bin/Release/net8.0/linux-x64/* /home/monitoring/
             pm2 restart all
