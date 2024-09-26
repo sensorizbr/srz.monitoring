@@ -22,7 +22,7 @@ jobs:
           target: "/home/monitoring"
 
       - name: Reiniciar PM2
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/scp-action@v2
         with:
           host: 146.190.220.28
           username: root
