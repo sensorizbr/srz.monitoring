@@ -24,7 +24,7 @@ jobs:
           name: sensoriz-monitoring
 
       - name: Deploy to server
-        uses: appleboy/ssh-action@v2
+        uses: appleboy/ssh-action@master
         with:
           host: 146.190.220.28
           username: root
