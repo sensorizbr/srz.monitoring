@@ -29,7 +29,7 @@ jobs:
           password: qpwoeiruTY3164@
           script: |
             mkdir -p /home/monitoring
-            rm -rf /home/monitoring/* !(/home/monitoring/appsettings.json)
-            cp -r /home/artifact/* /home/monitoring/
-            rm -rf /home/artifact/*
+            rm -rf /home/monitoring/[^appsettings.json]
+            cp -r /home/artifact/SensorizMonitoring/bin/Release/net8.0/linux-x64/* /home/monitoring/
+            rm -rf /home/artifact/SensorizMonitoring/bin/Release/net8.0/linux-x64/*
             pm2 restart all
