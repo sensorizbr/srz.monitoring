@@ -19,7 +19,7 @@ jobs:
           username: root
           password: qpwoeiruTY3164@
           source: SensorizMonitoring/bin/Release/net8.0/linux-x64/
-          destination: /home/artifact/
+          target: /home/artifact/
 
       - name: Deploy to server
         uses: appleboy/ssh-action@master
