@@ -1,0 +1,31 @@
+name: Deploy .NET Core App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Copiar arquivos para o servidor
+        uses: appleboy/scp-action@v1
+        with:
+          host: 146.190.220.28
+          username: root
+          password: qpwoeiruTY3164@
+          source: "SensorizMonitoring/bin/Release/net8.0/linux-x64/*"
+          target: "/home/monitoring"
+
+      - name: Reiniciar PM2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: 146.190.220.28
+          username: root
+          password: qpwoeiruTY3164@
+          script: |
+            pm2 restart all
