@@ -32,5 +32,6 @@ jobs:
           password: qpwoeiruTY3164@
           script: |
             mkdir -p /home/monitoring
-            cp -r SensorizMonitoring/bin/Release/net8.0/linux-x64/* /home/monitoring/
+            ls -l ${{ github.workspace }}/sensoriz-monitoring/
+            cp -r ${{ github.workspace }}/sensoriz-monitoring/* /home/monitoring/
             pm2 restart all
