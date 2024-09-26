@@ -12,13 +12,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Restore NuGet packages
+        run: dotnet restore
+
+      - name: Build and publish
+        run: |
+          dotnet build -c Release
+          dotnet publish -c Release -r linux-x64 --self-contained false
+        
       - name: Upload artifact to server
         uses: appleboy/scp-action@master
         with:
           host: 146.190.220.28
           username: root
           password: qpwoeiruTY3164@
-          source: SensorizMonitoring/bin/Release/net8.0/linux-x64/
+          source: SensorizMonitoring/bin/Release/net8.0/linux-x64/publish/
           target: /home/artifact/
 
       - name: Deploy to server
