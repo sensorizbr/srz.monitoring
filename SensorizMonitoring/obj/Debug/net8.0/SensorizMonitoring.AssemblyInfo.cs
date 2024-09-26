@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SensorizMonitoring")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e027b9998c96c8af7fc517ae82202c1a2eb7c26f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5f0b1db7c772444f852843deace59cc68a2c795a")]
 [assembly: System.Reflection.AssemblyProductAttribute("SensorizMonitoring")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SensorizMonitoring")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
