@@ -37,7 +37,9 @@ jobs:
             rm -rf /home/monitoring/*
             cp -r SensorizMonitoring/bin/Release/net8.0/linux-x64/* /home/artifact/
             ls -l /home/artifact/
-            cp -r /home/artifact/appsettings.json /home/monitoring/
+            if [ -f "/home/artifact/appsettings.json" ]; then
+              cp /home/artifact/appsettings.json /home/monitoring/
+            fi
             cp -r /home/artifact/* /home/monitoring/
             rm -rf /home/artifact/*
             pm2 restart all
