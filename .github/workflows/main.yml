@@ -12,17 +12,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
+      - name: Upload artifact to server
+        uses: appleboy/scp-action@v1
         with:
-          name: sensoriz-monitoring
-          path: SensorizMonitoring/bin/Release/net8.0/linux-x64/
-
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: sensoriz-monitoring
-          path: SensorizMonitoring/bin/Release/net8.0/linux-x64/
+          host: 146.190.220.28
+          username: root
+          password: qpwoeiruTY3164@
+          source: SensorizMonitoring/bin/Release/net8.0/linux-x64/
+          destination: /home/artifact/
 
       - name: Deploy to server
         uses: appleboy/ssh-action@master
@@ -31,19 +28,8 @@ jobs:
           username: root
           password: qpwoeiruTY3164@
           script: |
-            mkdir -p /home/artifact
-            rm -rf /home/artifact/*
             mkdir -p /home/monitoring
-            rm -rf /home/monitoring/*
-            if [ -d "SensorizMonitoring/bin/Release/net8.0/linux-x64/" ]; then
-              cp -r SensorizMonitoring/bin/Release/net8.0/linux-x64/* /home/artifact/
-              ls -l /home/artifact/
-              if [ -f "/home/artifact/appsettings.json" ]; then
-                cp /home/artifact/appsettings.json /home/monitoring/
-              fi
-              cp -r /home/artifact/* /home/monitoring/
-              rm -rf /home/artifact/*
-            else
-              echo "Diretório SensorizMonitoring/bin/Release/net8.0/linux-x64/ não encontrado"
-            fi
+            rm -rf /home/monitoring/* !(/home/monitoring/appsettings.json)
+            cp -r /home/artifact/* /home/monitoring/
+            rm -rf /home/artifact/*
             pm2 restart all
