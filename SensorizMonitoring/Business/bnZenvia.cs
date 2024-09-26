@@ -1,5 +1,4 @@
 ﻿using Google.Protobuf.WellKnownTypes;
-using IdentityModel.Client;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

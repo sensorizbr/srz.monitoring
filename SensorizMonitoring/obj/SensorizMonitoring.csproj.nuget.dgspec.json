@@ -52,17 +52,17 @@
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[8.0.4, )"
+              "version": "[8.0.8, )"
             },
             "Microsoft.EntityFrameworkCore.Tools": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[8.0.4, )"
+              "version": "[8.0.8, )"
             },
             "MySql.Data": {
               "target": "Package",
-              "version": "[8.3.0, )"
+              "version": "[9.0.0, )"
             },
             "Nancy": {
               "target": "Package",
@@ -72,37 +72,9 @@
               "target": "Package",
               "version": "[13.0.3, )"
             },
-            "OpenTelemetry": {
-              "target": "Package",
-              "version": "[1.8.1, )"
-            },
-            "OpenTelemetry.Exporter.OpenTelemetryProtocol": {
-              "target": "Package",
-              "version": "[1.8.1, )"
-            },
-            "OpenTelemetry.Extensions.Hosting": {
-              "target": "Package",
-              "version": "[1.8.1, )"
-            },
-            "OpenTelemetry.Instrumentation.AspNetCore": {
-              "target": "Package",
-              "version": "[1.8.1, )"
-            },
-            "OpenTelemetry.Instrumentation.Http": {
-              "target": "Package",
-              "version": "[1.8.1, )"
-            },
-            "OpenTelemetry.Instrumentation.Runtime": {
-              "target": "Package",
-              "version": "[1.8.0, )"
-            },
             "Pomelo.EntityFrameworkCore.MySql": {
               "target": "Package",
               "version": "[8.0.2, )"
-            },
-            "SharpAbp.Abp.OpenTelemetry.Exporter.Prometheus.AspNetCore": {
-              "target": "Package",
-              "version": "[3.3.4, )"
             },
             "StringTemplate4": {
               "target": "Package",
@@ -110,15 +82,11 @@
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
-              "version": "[6.5.0, )"
+              "version": "[6.8.0, )"
             },
             "Swashbuckle.AspNetCore.ReDoc": {
               "target": "Package",
-              "version": "[6.5.0, )"
-            },
-            "prometheus-net.AspNetCore": {
-              "target": "Package",
-              "version": "[8.2.1, )"
+              "version": "[6.8.0, )"
             }
           },
           "imports": [
