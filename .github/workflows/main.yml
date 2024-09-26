@@ -38,6 +38,6 @@ jobs:
           script: |
             mkdir -p /home/monitoring
             rm -rf /home/monitoring/[^appsettings.json]
-            cp -r /home/artifact/SensorizMonitoring/bin/Release/net8.0/linux-x64/* /home/monitoring/
-            rm -rf /home/artifact/SensorizMonitoring/bin/Release/net8.0/linux-x64/*
+            cp -r /home/artifact/SensorizMonitoring/bin/Release/net8.0/linux-x64/publish/* /home/monitoring/
+            rm -rf /home/artifact/SensorizMonitoring/bin/Release/net8.0/linux-x64/publish/*
             pm2 restart all
