@@ -31,9 +31,13 @@ jobs:
           username: root
           password: qpwoeiruTY3164@
           script: |
+            mkdir -p /home/artifact
+            rm -rf /home/artifact/*
             mkdir -p /home/monitoring
-            mkdir -p /home/runner/work/srz.monitoring
-            cp -r SensorizMonitoring/bin/Release/net8.0/linux-x64/* /home/runner/work/srz.monitoring/
-            ls -l /home/runner/work/srz.monitoring/
-            cp -r /home/runner/work/srz.monitoring/* /home/monitoring/
+            rm -rf /home/monitoring/*
+            cp -r SensorizMonitoring/bin/Release/net8.0/linux-x64/* /home/artifact/
+            ls -l /home/artifact/
+            cp -r /home/artifact/appsettings.json /home/monitoring/
+            cp -r /home/artifact/* /home/monitoring/
+            rm -rf /home/artifact/*
             pm2 restart all
