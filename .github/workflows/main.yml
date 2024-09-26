@@ -35,11 +35,15 @@ jobs:
             rm -rf /home/artifact/*
             mkdir -p /home/monitoring
             rm -rf /home/monitoring/*
-            cp -r SensorizMonitoring/bin/Release/net8.0/linux-x64/* /home/artifact/
-            ls -l /home/artifact/
-            if [ -f "/home/artifact/appsettings.json" ]; then
-              cp /home/artifact/appsettings.json /home/monitoring/
+            if [ -d "SensorizMonitoring/bin/Release/net8.0/linux-x64/" ]; then
+              cp -r SensorizMonitoring/bin/Release/net8.0/linux-x64/* /home/artifact/
+              ls -l /home/artifact/
+              if [ -f "/home/artifact/appsettings.json" ]; then
+                cp /home/artifact/appsettings.json /home/monitoring/
+              fi
+              cp -r /home/artifact/* /home/monitoring/
+              rm -rf /home/artifact/*
+            else
+              echo "Diretório SensorizMonitoring/bin/Release/net8.0/linux-x64/ não encontrado"
             fi
-            cp -r /home/artifact/* /home/monitoring/
-            rm -rf /home/artifact/*
             pm2 restart all
