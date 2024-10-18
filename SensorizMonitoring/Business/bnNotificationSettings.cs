@@ -24,7 +24,7 @@ namespace SensorizMonitoring.Business
                 List<NotificationSettings> lst = new List<NotificationSettings>();
 
                 lst = _context.NotificationSettings
-                   .Where(d => d.device_id == deviceId)
+                   .Where(d => d.device_id == deviceId && d.enabled == 1)
                    .AsNoTracking()
                    .ToList();
 

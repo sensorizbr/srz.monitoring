@@ -16,8 +16,8 @@ namespace SensorizMonitoring.Utils
         public string GetAddressByCoordinators(double lat, double lng)
         {
             Globals gb = new Globals();
-            string sLat = gb.DotHealth(lat);
-            string sLng = gb.DotHealth(lng);
+            string sLat = gb.DotChange(lat);
+            string sLng = gb.DotChange(lng);
 
             // Defina a chave de API do Google Maps
             var apiKey = _configuration["Settings:GOOGLE_API_TOKEN"];

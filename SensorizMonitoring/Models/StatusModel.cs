@@ -2,7 +2,7 @@
 {
     public class StatusModel
     {
-        public int seqNum { get; set; }
+        public string seqNum { get; set; }
         public bool externalPower { get; set; }
         public bool charging { get; set; }
         public double batteryVoltage { get; set; }

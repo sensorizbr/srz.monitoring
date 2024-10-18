@@ -113,7 +113,7 @@ namespace SensorizMonitoring
             }
         }
 
-        public string DotHealth(double dValue)
+        public string DotChange(double dValue)
         {
             return dValue.ToString().Replace(",", ".");
         }
@@ -172,6 +172,11 @@ namespace SensorizMonitoring
             });
 
             return cleanHtml; // return the cleaned HTML
+        }
+
+        public string RemoveSpecialCharacters(string input)
+        {
+            return Regex.Replace(input, @"[^\w\s]|,|\.", "");
         }
     }
 

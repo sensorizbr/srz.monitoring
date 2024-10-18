@@ -127,7 +127,6 @@ namespace SensorizMonitoring.Business
             {
                 case 1: //Temperature
 
-
                     ResultMath = mc.CheckMathConditionDouble(setting.comparation_id, setting.min_value, setting.max_value, monit.status.temperature, isRecovery);
                     if (isRecovery) setting.priority = "RETORNO AO PADRÃO";
 
@@ -158,7 +157,10 @@ namespace SensorizMonitoring.Business
                     else if (monit.pos is not null && monit.status.movement.Equals("MOVING"))
                     {
                         evento = "EM MOVIMENTAÇÃO";
-                        ResultMath = true;
+                        ResultMath = mc.CheckMathComparation_Directions_GetInGetOut(setting.comparation_id, setting.lat_origin, setting.long_origin, monit.pos.lat, monit.pos.lon, setting.tolerance_radius, ref evento, isRecovery);
+
+                        fields = GetMessageTemplate(setting, 0, monit.pos.lat, monit.pos.lon, unitOfMeasurement, evento);
+                        sTemplateID = _configuration["Settings:ZENVIA_WHATSAPP_TEMPLATE_ID_GEOINOUT"];
                     }
                     else
                     {
@@ -308,7 +310,7 @@ namespace SensorizMonitoring.Business
                     //Encaixe Template Geolocation
                     return new
                     {
-                        icon = DecideIconLocation(setting.priority),
+                        icon = DecideIconLocation(evento),
                         codigo = setting.device_id.ToString(),
                         evento = evento,
                         lat_ref = setting.lat_origin.ToString(),
@@ -411,11 +413,11 @@ namespace SensorizMonitoring.Business
 
         public string DecideIconLocation(string priority)
         {
-            if (priority.ToUpper().Equals("GET IN"))
+            if (priority.ToUpper().Equals("ENTRADA"))
             {
                 return "⬇️📍";
             }
-            else if (priority.ToUpper().Equals("GET OUT"))
+            else if (priority.ToUpper().Equals("SAIDA"))
             {
                 return "⬆️📍";
             }
